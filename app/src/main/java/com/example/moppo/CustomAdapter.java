@@ -28,7 +28,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         this.dailyPlans = dailyPlans;
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder{ //item들 불러오기
+    public class CustomViewHolder extends RecyclerView.ViewHolder{ //item 불러오기
         TextView plan;
         TextView order;
         TextView income;
@@ -68,7 +68,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         holder.edit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //int editPosition = (int) v.getTag();
 
                 //edit_box.xml 불러서 다이얼로그 보여주기
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -149,18 +148,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
                 dailyPlan.setSelected(isChecked);
             }
         });
-
-        //체크박스 체크면 수입 표시 아니면 수입이 안 보이게
-     /*   holder.cb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(holder.cb.isChecked()){
-                    holder.income.setVisibility(View.VISIBLE);
-                }else{
-                    holder.income.setVisibility(View.INVISIBLE);
-                }
-            }
-        });*/
     }
 
     @Override

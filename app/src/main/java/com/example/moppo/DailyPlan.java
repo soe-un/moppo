@@ -2,9 +2,9 @@ package com.example.moppo;
 
 public class DailyPlan {
     private String plan; //일정
-    private boolean isSelected;//일정을 완료했는지 //0이면 no 1이면 yes
-    private String order; //우선순위 //힘들면 그냥 string 해라
-    private String income; //수입 //힘들면 그냥 string 해라
+    private boolean isSelected;//일정을 완료했는지
+    private String order; //우선순위
+    private String income; //수입
 
     public String getPlan() {
         return plan;

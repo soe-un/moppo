@@ -13,18 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moppo"
         android:usesCleartextTraffic="true">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"/>
+
+        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".SubActivity" />
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".DailyActivity"/>
+        <activity android:name=".CalendarActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".SubActivity" />
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".DailyActivity"/>
-        <activity android:name=".CalendarActivity"/>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="ad425e269d6ec4ab61d5a8bcda0f20da" />

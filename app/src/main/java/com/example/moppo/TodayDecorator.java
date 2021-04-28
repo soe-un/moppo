@@ -13,13 +13,11 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.util.Date;
 
-//Decorate a day by making the text big and bold
-
-public class OneDayDecorator implements DayViewDecorator {
+public class TodayDecorator implements DayViewDecorator {
 
     private CalendarDay date;
 
-    public OneDayDecorator() {
+    public TodayDecorator() {
         date = CalendarDay.today();
     }
 
@@ -31,14 +29,6 @@ public class OneDayDecorator implements DayViewDecorator {
     @Override
     public void decorate(DayViewFacade view) {
         view.addSpan(new StyleSpan(Typeface.BOLD));
-        view.addSpan(new RelativeSizeSpan(1.4f));
-        view.addSpan(new ForegroundColorSpan(Color.rgb(184, 181, 255)));
-    }
-
-    /**
-     * We're changing the internals, so make sure to call {@linkplain MaterialCalendarView#invalidateDecorators()}
-     */
-    public void setDate(Date date) {
-        this.date = CalendarDay.from(date);
+        view.addSpan(new ForegroundColorSpan(Color.BLUE));
     }
 }
