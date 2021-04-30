@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -98,25 +99,32 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
                         String plan = editTextPlan.getText().toString();
                         String order = editTextOrder.getText().toString();
 
-                        //order에 따라 돈 구현하기
                         int intOrder = Integer.parseInt(order);
-                        int possibleOrder = dailyPlans.size() + 1;
-                        int intIncome = 0;
-                        intIncome = 100000/possibleOrder*(possibleOrder-(intOrder-1));
-
-                        //데이터 변경
-                        DailyPlan planItem = new DailyPlan(plan, false, order, Integer.toString(intIncome));
-                        dailyPlans.set(holder.getAdapterPosition(),planItem); //수정
-
-                        //추가될 때마다 기존 수입들도 바꾸기
-                        for(int i=0; i<dailyPlans.size(); i++) {
-                            DailyPlan currentItem = dailyPlans.get(i);
-                            int currentOrder = Integer.parseInt(currentItem.getOrder());
-                            currentItem.setIncome(Integer.toString(100000/dailyPlans.size()*(dailyPlans.size()-(currentOrder-1))));
+                        //우선순위 1부터 가능
+                        if(intOrder<1){
+                            Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
+                            return;
                         }
 
-                        //어댑터에게 알리기
-                        notifyItemChanged(holder.getAdapterPosition()); //업데이트
+                        //우선순위에 따라 돈 구현하기
+                        int possibleOrder = dailyPlans.size();
+                        int intIncome = 0;
+                        intIncome = 100000/possibleOrder*(possibleOrder-(intOrder-1));
+                        //백의 자리부터 0
+                        intIncome = intIncome / 1000 * 1000;
+
+                        //플랜 변경
+                        DailyPlan planItem;
+                        if(intOrder > possibleOrder ) {
+                            planItem = new DailyPlan(plan, false, order, "일정이 늘면 업데이트");
+                        } else{
+                            planItem = new DailyPlan(plan, false, order, Integer.toString(intIncome));
+                        }
+                        dailyPlans.set(holder.getAdapterPosition(), planItem);
+
+                        //업데이트
+                        notifyItemChanged(holder.getAdapterPosition());
+
                         dialog.dismiss();
                     }
                 });
@@ -131,8 +139,26 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
             public void onClick(View v) {
                 int removePosition = (int) v.getTag();
                 dailyPlans.remove(removePosition); // 그 아이템 삭제
-                notifyItemRemoved(removePosition);
-                notifyItemRangeChanged(removePosition,dailyPlans.size()); // 업데이트
+
+                //삭제될 때마다 기존 수입들도 바꾸기
+                for(int i=0; i<dailyPlans.size(); i++) {
+                    DailyPlan currentItem = dailyPlans.get(i);
+                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+
+                    if(currentOrder > dailyPlans.size()) {
+                        String currentIncome = "일정이 늘면 업데이트";
+                        currentItem.setIncome(currentIncome);
+                    }
+                    else {
+                        //백의 자리부터 0
+                        int Order = 100000 / dailyPlans.size() * (dailyPlans.size() - (currentOrder - 1));
+                        Order = Order / 1000 * 1000;
+                        currentItem.setIncome(Integer.toString(Order));
+                    }
+                }
+
+                //업데이트
+                notifyDataSetChanged();
             }
         });
 
