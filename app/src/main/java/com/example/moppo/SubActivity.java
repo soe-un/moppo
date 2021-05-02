@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 public class SubActivity extends AppCompatActivity {
 
@@ -33,5 +36,19 @@ public class SubActivity extends AppCompatActivity {
         rv_email.setText(strEmail);
 
         Glide.with(this).load(strProfileImg).into(iv_profile);
+        findViewById(R.id.btn_logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
+                    @Override
+                    public void onCompleteLogout()
+                    {
+                        //로그아웃 성공시 수행하는 지점
+                        finish();//현재 Activity 종료
+                    }
+                });
+            }
+        });
+
     }
 }

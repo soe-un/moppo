@@ -10,9 +10,9 @@ import com.kakao.auth.ISessionConfig;
 import com.kakao.auth.KakaoAdapter;
 import com.kakao.auth.KakaoSDK;
 
-public class CustomActivity extends Application
+public class CustomApplication extends Application
 {
-    private static volatile CustomActivity instance = null;
+    private static volatile CustomApplication instance = null;
 
     private static class KakaoSDKAdapter extends KakaoAdapter
     {
@@ -61,13 +61,13 @@ public class CustomActivity extends Application
             return new IApplicationConfig() {
                 @Override
                 public Context getApplicationContext() {
-                    return CustomActivity.getGlobalApplicationContext();
+                    return CustomApplication.getGlobalApplicationContext();
                 }
             };
         }
     }
 
-    public static CustomActivity getGlobalApplicationContext() {
+    public static CustomApplication getGlobalApplicationContext() {
         if(instance == null) {
             throw new IllegalStateException("this application does not inherit com.kakao.GlobalApplication");
         }
