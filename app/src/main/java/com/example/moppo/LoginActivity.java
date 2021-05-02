@@ -19,6 +19,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.kakao.auth.ISessionCallback;
+import com.kakao.auth.KakaoSDK;
 import com.kakao.auth.Session;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
@@ -121,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(MeV2Response result) {
-                        Intent intent = new Intent(LoginActivity.this, SubActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, CalendarActivity.class);
                         intent.putExtra("name", result.getKakaoAccount().getProfile().getNickname());//지원 중단
                         intent.putExtra("profileImg", result.getKakaoAccount().getProfile().getProfileImageUrl());
                         intent.putExtra("email", result.getKakaoAccount().getEmail());

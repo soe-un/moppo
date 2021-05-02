@@ -61,6 +61,7 @@
         app:layout_constraintStart_toStartOf="@+id/login_btn" />
 
     <com.kakao.usermgmt.LoginButton
+        android:id="@+id/kakao_btn"
         android:layout_width="319dp"
         android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
