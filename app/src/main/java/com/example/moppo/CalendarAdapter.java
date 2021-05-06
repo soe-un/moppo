@@ -19,12 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
+public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CustomViewHolder> {
 
     private ArrayList<DailyPlan> dailyPlans;
     private Context mContext;
 
-    public CustomAdapter(Context context, ArrayList<DailyPlan> dailyPlans) { //constructor
+    public CalendarAdapter(Context context, ArrayList<DailyPlan> dailyPlans) { //constructor
         this.mContext = context;
         this.dailyPlans = dailyPlans;
     }
@@ -52,13 +52,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
 
     @NonNull
     @Override
-    public CustomAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) { //뷰홀더 객체 생성
+    public CalendarAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) { //뷰홀더 객체 생성
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list,parent,false);
         return new CustomViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomAdapter.CustomViewHolder holder, int position) {//데이터를 뷰홀더에 바인딩
+    public void onBindViewHolder(@NonNull CalendarAdapter.CustomViewHolder holder, int position) {//데이터를 뷰홀더에 바인딩
         final DailyPlan dailyPlan = dailyPlans.get(position); //final로 선언해야 값이 바뀌지 않음
 
         holder.plan.setText(dailyPlan.getPlan());

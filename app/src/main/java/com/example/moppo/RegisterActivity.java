@@ -32,11 +32,12 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view){//Eidt Text에 입력되어 있는 값 가져오기
                 String userID=et_id.getText().toString();
                 String userPass=et_pass.getText().toString();
-                String userName=et_name.getText().toString();
-                String nickName=et_nick.getText().toString();
+                String name=et_name.getText().toString();
+                String nickname=et_nick.getText().toString();
 
-                RegisterData task = new RegisterData();
-                task.execute("http://" + IP_ADDRESS + "/insert.php", userID, userPass, userName, nickName);
+                RegisterData task = new RegisterData(getApplicationContext());
+                task.execute("http://" + IP_ADDRESS + "/register.php", userID, userPass, name, nickname);
+
             }
         });
     }

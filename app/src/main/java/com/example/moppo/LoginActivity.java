@@ -70,14 +70,13 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            System.out.println("response : " + response);
+                            //System.out.println("response : " + response);
 
                             JSONObject jsonObject = new JSONObject(response);
                             boolean success = jsonObject.getBoolean("success");
 
 
                             if (success) {
-
                                 String userID = jsonObject.getString("userID");
                                 String userPwd = jsonObject.getString("userPwd");
 
@@ -123,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(MeV2Response result) {
                         Intent intent = new Intent(LoginActivity.this, CalendarActivity.class);
-                        intent.putExtra("name", result.getKakaoAccount().getProfile().getNickname());//지원 중단
+                        //intent.putExtra("name", result.getKakaoAccount().getProfile().getNickname());//지원 중단
                         intent.putExtra("profileImg", result.getKakaoAccount().getProfile().getProfileImageUrl());
                         intent.putExtra("email", result.getKakaoAccount().getEmail());
                         startActivity(intent);
@@ -136,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onSessionOpenFailed(KakaoException exception) {
-
+                System.out.println("not open");
             }
         };
         Session.getCurrentSession().addCallback(mSessionCallback);

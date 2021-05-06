@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,16 +20,14 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 
 public class DailyActivity extends AppCompatActivity {
 
     private ArrayList<DailyPlan> mPlanList = new ArrayList<>();
-    private CustomAdapter mAdapter;
+    private CalendarAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     String selectedDate;
@@ -47,7 +44,7 @@ public class DailyActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new CustomAdapter(this, mPlanList);
+        mAdapter = new CalendarAdapter(this, mPlanList);
         mRecyclerView.setAdapter(mAdapter);
 
         Intent intent = getIntent();

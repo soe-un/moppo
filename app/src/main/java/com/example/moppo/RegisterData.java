@@ -1,7 +1,9 @@
 package com.example.moppo;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,6 +14,11 @@ import java.net.URL;
 
 class RegisterData extends AsyncTask<String, Void, String> {
     private static String TAG = "phptest";
+    Context registerContext;
+
+    public RegisterData(Context c){
+        this.registerContext = c;
+    }
 
     @Override
     protected void onPreExecute(){
@@ -19,9 +26,12 @@ class RegisterData extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String result){
+    protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        Log.d(TAG,"POST response - " +result);
+        Log.d(TAG, "POST response - " + result);
+        if (result.equals("success")) {
+            Toast.makeText(registerContext, "회원가입이 되었습니다.", Toast.LENGTH_LONG).show();
+        } else { Toast.makeText(registerContext, result, Toast.LENGTH_LONG).show(); }
     }
 
     @Override
@@ -29,11 +39,11 @@ class RegisterData extends AsyncTask<String, Void, String> {
         //id, password, name, nickname
         String userID = (String)params[1];
         String userPwd = (String)params[2];
-        String userName = (String)params[3];
-        String nickName = (String)params[4];
+        String name = (String)params[3];
+        String nickname = (String)params[4];
 
         String serverURL = (String)params[0];
-        String postParameters = "userID=" + userID + "&userPwd=" + userPwd + "&userName=" + userName + "&nickName=" + nickName;
+        String postParameters = "userID=" + userID + "&userPwd=" + userPwd + "&name=" + name + "&nickname=" + nickname;
 
         try{
 
