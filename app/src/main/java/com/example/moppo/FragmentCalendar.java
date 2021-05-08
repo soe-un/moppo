@@ -2,32 +2,37 @@ package com.example.moppo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.CalendarView;
-import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
-import com.prolificinteractive.materialcalendarview.CalendarUtils;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.util.Calendar;
 
-public class CalendarActivity extends AppCompatActivity implements OnDateSelectedListener {
-
+public class FragmentCalendar extends Fragment implements OnDateSelectedListener{
     MaterialCalendarView cal;
     final TodayDecorator todayDecorator = new TodayDecorator();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
 
-        cal = (MaterialCalendarView)findViewById(R.id.calendarView);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        return inflater.inflate(R.layout.fragment_calendar,container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        cal = (MaterialCalendarView)view.findViewById(R.id.calendarView);
 
         cal.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -41,7 +46,7 @@ public class CalendarActivity extends AppCompatActivity implements OnDateSelecte
                 todayDecorator);
 
         cal.setSelectedDate(CalendarDay.today());
-        cal.setOnDateChangedListener(this);
+        cal.setOnDateChangedListener((OnDateSelectedListener) this);
 
         //헤더랑 요일 크기 키워주기
         cal.setHeaderTextAppearance(R.style.HEADER);
@@ -55,7 +60,7 @@ public class CalendarActivity extends AppCompatActivity implements OnDateSelecte
         int day = date.getDay();
         String selectedDate = year + "." + month + "." + day;
 
-        Intent intent = new Intent(getApplicationContext(), DailyActivity.class);
+        Intent intent = new Intent(getActivity(), DailyActivity.class);
         intent.putExtra("DATE",selectedDate);
         startActivity(intent);
     }

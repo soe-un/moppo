@@ -1,6 +1,10 @@
 package com.example.moppo;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -9,8 +13,11 @@ import android.content.pm.Signature;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
 import com.kakao.network.ErrorResult;
@@ -22,70 +29,63 @@ import com.kakao.util.exception.KakaoException;
 import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ISessionCallback mSessionCallback;
+    private BottomNavigationView mBottomNV;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private FragmentCalendar fragmentCalendar = new FragmentCalendar();
+    private FragmentRanking fragmentRanking = new FragmentRanking();
+    private FragmentStatistic fragmentStatistic = new FragmentStatistic();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.frameLayout,fragmentCalendar).commitAllowingStateLoss();
 
-        mSessionCallback=new ISessionCallback() {
+        mBottomNV = findViewById(R.id.bottomNavBar);
+        mBottomNV.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onSessionOpened() {
-                //로그인 요청
-                UserManagement.getInstance().me(new MeV2ResponseCallback() {
-                    @Override
-                    public void onFailure(ErrorResult errorResult) {
-                        //로그인 실패
-                        Toast.makeText(MainActivity.this, "로그인 도중에 오류가 발생하였습니다..", Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onSessionClosed(ErrorResult errorResult) {
-                        //세션이 닫힘..
-                        Toast.makeText(MainActivity.this, "세션이 닫혔습니다...다시 시도해주세요", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(MeV2Response result) {
-                        Intent intent=new Intent(MainActivity.this,SubActivity.class);
-                        intent.putExtra("name",result.getKakaoAccount().getProfile().getNickname());//지원 중단
-                        intent.putExtra("profileImg",result.getKakaoAccount().getProfile().getProfileImageUrl());
-                        intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        startActivity(intent);
-                        //로그인 성공
-                        Toast.makeText(MainActivity.this, "환영합니다!", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                BottomNavigate(item.getItemId());
+                return true;
             }
-
-            @Override
-            public void onSessionOpenFailed(KakaoException exception) {
-
-            }
-        };
-        Session.getCurrentSession().addCallback(mSessionCallback);
-        Session.getCurrentSession().checkAndImplicitOpen();
-        //getAppHashKey();
+        });
+        mBottomNV.setSelectedItemId(R.id.calendar);// 캘린더 프래그먼트 선택한 채로 시작
     }
 
-    private void getAppHashKey() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md;
-                md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String something = new String(Base64.encode(md.digest(),0));
-                Log.e("Hash key", something);
+    private void BottomNavigate(int id){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-            }
-        } catch (Exception e) {
-            Log.e("name not found", e.toString());
+        switch(id){
+            case R.id.calendar:
+                transaction.replace(R.id.frameLayout, fragmentCalendar).commitAllowingStateLoss();
+                break;
+            case R.id.statistic:
+                transaction.replace(R.id.frameLayout, fragmentStatistic).commitAllowingStateLoss();
+                break;
+            case R.id.ranking:
+                transaction.replace(R.id.frameLayout, fragmentRanking).commitAllowingStateLoss();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.option:
+                //옵션 누르면 할 것
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

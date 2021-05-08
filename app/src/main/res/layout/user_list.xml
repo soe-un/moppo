@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+    <ImageView
+        android:id="@+id/profile_it"
+        android:src="@drawable/user"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:gravity="center" />
+    <TextView
+        android:id="@+id/nickname_it"
+        android:text="뇨뇽"
+        android:textSize = "20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="20dp"
+        android:gravity="center" />
+    <Button
+        android:id="@+id/support_it"
+        android:text="후원"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="190dp"
+        android:gravity="center" />
+
+
+
+</LinearLayout>

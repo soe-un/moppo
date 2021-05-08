@@ -83,7 +83,7 @@ public class DailyActivity extends AppCompatActivity {
 
                 int intOrder = Integer.parseInt(order);
                 //우선순위 1부터 가능
-                if(intOrder<1){
+                if (intOrder < 1) {
                     Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -97,7 +97,7 @@ public class DailyActivity extends AppCompatActivity {
 
                 //플랜 추가
                 DailyPlan planItem;
-                if(intOrder > possibleOrder ) {
+                if (intOrder > possibleOrder) {
                     planItem = new DailyPlan(plan, false, order, "일정이 늘면 업데이트");
                 } else {
                     planItem = new DailyPlan(plan, false, order, Integer.toString(intIncome));
@@ -109,11 +109,10 @@ public class DailyActivity extends AppCompatActivity {
                     DailyPlan currentItem = mPlanList.get(i);
                     int currentOrder = Integer.parseInt(currentItem.getOrder());
 
-                    if(currentOrder > mPlanList.size()) {
+                    if (currentOrder > mPlanList.size()) {
                         String currentIncome = "일정이 늘면 업데이트";
                         currentItem.setIncome(currentIncome);
-                    }
-                    else {
+                    } else {
                         //1000단위로 구현하기
                         int Order = 100000 / mPlanList.size() * (mPlanList.size() - (currentOrder - 1));
                         Order = Order / 1000 * 1000;
@@ -152,8 +151,8 @@ public class DailyActivity extends AppCompatActivity {
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         DataOutputStream dos = null;
-        String fileName = "planList" + selectedDate;
         realIncome = 0;
+        String fileName = "planList" + selectedDate;
         TextView totalIncome = (TextView) findViewById(R.id.total_income);
 
         if (IsRepeat()) { //우선순위 중복이면 저장 x
@@ -179,9 +178,9 @@ public class DailyActivity extends AppCompatActivity {
                 if (item.getSelected()) realIncome += Integer.parseInt(item.getIncome());
             }
             dos.writeInt(realIncome);
-
-            read();
             totalIncome.setText("총 수입: " + realIncome);
+
+            Toast.makeText(DailyActivity.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
 
             dos.flush();
         } catch (Exception e) {

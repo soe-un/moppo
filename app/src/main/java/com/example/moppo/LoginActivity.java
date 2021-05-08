@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                                 String userPwd = jsonObject.getString("userPwd");
 
                                 Toast.makeText(getApplicationContext(), "로그인에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, CalendarActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 //intent.putExtra("userID", userID);
                                 //intent.putExtra("userPwd", userPwd);
                                 startActivity(intent);
@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(MeV2Response result) {
-                        Intent intent = new Intent(LoginActivity.this, CalendarActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         //intent.putExtra("name", result.getKakaoAccount().getProfile().getNickname());//지원 중단
                         intent.putExtra("profileImg", result.getKakaoAccount().getProfile().getProfileImageUrl());
                         intent.putExtra("email", result.getKakaoAccount().getEmail());
