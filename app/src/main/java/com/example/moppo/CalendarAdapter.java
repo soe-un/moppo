@@ -109,9 +109,30 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         //우선순위에 따라 돈 구현하기
                         int possibleOrder = dailyPlans.size();
                         int intIncome = 0;
+
+                        /*
                         intIncome = 100000/possibleOrder*(possibleOrder-(intOrder-1));
                         //백의 자리부터 0
                         intIncome = intIncome / 1000 * 1000;
+                         */
+
+                        switch (intOrder) {
+                            case 1:
+                                intIncome = 100000;
+                                break;
+                            case 2:
+                                intIncome = 800000;
+                                break;
+                            case 3:
+                                intIncome = 500000;
+                                break;
+                            case 4:
+                                intIncome = 250000;
+                                break;
+                            default:
+                                Toast.makeText(v.getContext(),"4가 최대입니다.", Toast.LENGTH_SHORT).show();
+                                return;
+                        }
 
                         //플랜 변경
                         DailyPlan planItem;
@@ -140,6 +161,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                 int removePosition = (int) v.getTag();
                 dailyPlans.remove(removePosition); // 그 아이템 삭제
 
+                /*
                 //삭제될 때마다 기존 수입들도 바꾸기
                 for(int i=0; i<dailyPlans.size(); i++) {
                     DailyPlan currentItem = dailyPlans.get(i);
@@ -154,6 +176,36 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         int Order = 100000 / dailyPlans.size() * (dailyPlans.size() - (currentOrder - 1));
                         Order = Order / 1000 * 1000;
                         currentItem.setIncome(Integer.toString(Order));
+                    }
+                }*/
+
+                //삭제될 때마다 기존 수입들도 바꾸기
+                for(int i=0; i<dailyPlans.size(); i++) {
+                    DailyPlan currentItem = dailyPlans.get(i);
+                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+
+                    if(currentOrder > dailyPlans.size()) {
+                        String currentIncome = "일정이 늘면 업데이트";
+                        currentItem.setIncome(currentIncome);
+                    }
+                    else {
+                        switch (currentOrder) {
+                            case 1:
+                                currentItem.setIncome("100000");
+                                break;
+                            case 2:
+                                currentItem.setIncome("800000");
+                                break;
+                            case 3:
+                                currentItem.setIncome("500000");
+                                break;
+                            case 4:
+                                currentItem.setIncome("250000");
+                                break;
+                            //default:
+                            //    Toast.makeText(v.getContext(), "4가 최대입니다.", Toast.LENGTH_SHORT).show();
+                            //    break;
+                        }
                     }
                 }
 
@@ -187,3 +239,4 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
         return position;
     }
 }
+

@@ -91,9 +91,30 @@ public class DailyActivity extends AppCompatActivity {
                 //우선순위에 따라 돈 구현하기
                 int possibleOrder = mPlanList.size() + 1;
                 int intIncome = 0;
+
+                /*
                 intIncome = 100000 / possibleOrder * (possibleOrder - (intOrder - 1));
                 //백의 자리부터 0
                 intIncome = intIncome / 1000 * 1000;
+                */
+
+                switch (intOrder) {
+                    case 1:
+                        intIncome = 100000;
+                        break;
+                    case 2:
+                        intIncome = 800000;
+                        break;
+                    case 3:
+                        intIncome = 500000;
+                        break;
+                    case 4:
+                        intIncome = 250000;
+                        break;
+                    default:
+                        Toast.makeText(DailyActivity.this, "4가 최대입니다.", Toast.LENGTH_SHORT).show();
+                        return;
+                }
 
                 //플랜 추가
                 DailyPlan planItem;
@@ -105,7 +126,7 @@ public class DailyActivity extends AppCompatActivity {
                 mPlanList.add(planItem);
 
                 //추가될 때마다 기존 수입들도 바꾸기
-                for (int i = 0; i < mPlanList.size(); i++) {
+                /*for (int i = 0; i < mPlanList.size(); i++) {
                     DailyPlan currentItem = mPlanList.get(i);
                     int currentOrder = Integer.parseInt(currentItem.getOrder());
 
@@ -117,6 +138,35 @@ public class DailyActivity extends AppCompatActivity {
                         int Order = 100000 / mPlanList.size() * (mPlanList.size() - (currentOrder - 1));
                         Order = Order / 1000 * 1000;
                         currentItem.setIncome(Integer.toString(Order));
+                    }
+                }*/
+
+                //추가될 때마다 기존 수입들도 바꾸기
+                for (int i = 0; i < mPlanList.size(); i++) {
+                    DailyPlan currentItem = mPlanList.get(i);
+                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+
+                    if (currentOrder > mPlanList.size()) {
+                        String currentIncome = "일정이 늘면 업데이트";
+                        currentItem.setIncome(currentIncome);
+                    } else {
+                        switch (currentOrder) {
+                            case 1:
+                                currentItem.setIncome("100000");
+                                break;
+                            case 2:
+                                currentItem.setIncome("800000");
+                                break;
+                            case 3:
+                                currentItem.setIncome("500000");
+                                break;
+                            case 4:
+                                currentItem.setIncome("250000");
+                                break;
+                            //default:
+                            //    Toast.makeText(DailyActivity.this, "4가 최대입니다.", Toast.LENGTH_SHORT).show();
+                            //    return;
+                        }
                     }
                 }
 
@@ -180,7 +230,7 @@ public class DailyActivity extends AppCompatActivity {
             dos.writeInt(realIncome);
             totalIncome.setText("총 수입: " + realIncome);
 
-            Toast.makeText(DailyActivity.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DailyActivity.this, "총수입이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
 
             dos.flush();
         } catch (Exception e) {
@@ -231,6 +281,4 @@ public class DailyActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }
