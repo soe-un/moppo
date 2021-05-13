@@ -25,6 +25,8 @@ public class FragmentRanking extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+
+
         return inflater.inflate(R.layout.fragment_ranking,container, false);
     }
 
@@ -32,7 +34,7 @@ public class FragmentRanking extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.PlanList);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.userList);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), 1));
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
