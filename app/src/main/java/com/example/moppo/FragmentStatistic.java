@@ -9,9 +9,57 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+
 public class FragmentStatistic extends Fragment{
-    @Nullable
-    @Override
+
+    GetTodayActivity in=new GetTodayActivity();
+    Calendar cal = Calendar.getInstance();
+    int month = cal.get(cal.MONTH) + 1;
+    int date = cal.get(cal.DATE);
+    int []daylist = new int[5];
+    ArrayList<Entry> values=new ArrayList<>();//Entry 란?
+
+    // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
+    public void Get5days(int month,int date){
+        for(int i = 0 ; i < 5 ; i ++) {
+            daylist[i]=in.getAchievement(month,date-4+i);
+        }
+        for(int i = 0 ; i < 5 ; i ++) {
+            float val=daylist[i];
+            values.add(new Entry(i+1,val));
+        }
+
+
+        // setGraph(values);
+
+    }
+    //그래프 설정
+    public void setGraph(View view, ArrayList<Entry> values){
+        LineChart chart;
+
+        chart= view.findViewById(R.id.linechart);
+
+        LineDataSet set1;
+        set1=new LineDataSet(values,"최근 5일 달성률");
+
+        ArrayList<ILineDataSet> dataSets=new ArrayList<>();
+        dataSets.add(set1);//data값 집어 넣음
+
+        LineData data=new LineData(dataSets);
+
+        chart.setData(data);
+    }
+
+
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_statistic,container, false);
@@ -20,5 +68,8 @@ public class FragmentStatistic extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Get5days(month,date);
+        setGraph(view,values);
+
     }
 }
