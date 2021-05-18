@@ -9,16 +9,21 @@ import android.os.Bundle;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class GetTodayActivity extends AppCompatActivity {
+public class GetTodayActivity {
     //오늘 날짜 가져오기
-    Calendar cal = Calendar.getInstance();
-    int month = cal.get(cal.MONTH) + 1;
-    int date = cal.get(cal.DATE);
+    //Calendar cal = Calendar.getInstance();
+    //int month = cal.get(cal.MONTH) + 1;
+    //int date = cal.get(cal.DATE);
     public static Context context_main;
 
     public int result = 10;
+
+    public GetTodayActivity(Context context){
+        this.context_main = context;
+    }
 
     public void readToday(int month, int date) { //파일 읽어오기
 
@@ -31,11 +36,12 @@ public class GetTodayActivity extends AppCompatActivity {
         BufferedInputStream bis = null;
         DataInputStream dis = null;
 
-        String TodayList = "planlist" + month + date;
+        String TodayList = "planList2021."+month+"."+date;
         String fileName = TodayList;
+        System.out.println("fileName"+fileName);
 
         try {
-            fis = openFileInput(fileName);
+            fis = context_main.openFileInput(fileName);
             bis = new BufferedInputStream(fis);
             dis = new DataInputStream(bis);
             //1순위 자료
@@ -95,6 +101,7 @@ public class GetTodayActivity extends AppCompatActivity {
 
     public int getAchievement(int m,int d) {//읽어온 파일의 달성률 반환 함수
         readToday(m, d);
+        System.out.println(result);
         return result * 10;
     }
 }

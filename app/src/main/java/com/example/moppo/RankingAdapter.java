@@ -34,17 +34,23 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
             this.nickname = (TextView) itemView.findViewById(R.id.nickname_it);
             this.support = (Button) itemView.findViewById(R.id.support_it);
         }
+
+        public TextView getNickname(){
+            return nickname;
+        }
     }
 
     @NonNull
     @Override
     public RankingAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {//뷰홀더 객체 생성
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_list,parent,false);
+
         return new CustomViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RankingAdapter.CustomViewHolder holder, int position) {//데이터를 뷰홀더에 바인딩
+        holder.getNickname().setText(users.get(position).getNick());
     }
 
     @Override

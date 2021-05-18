@@ -15,7 +15,7 @@
         android:gravity="center" />
     <TextView
         android:id="@+id/nickname_it"
-        android:text="뇨뇽"
+        android:text=""
         android:textSize = "20sp"
         android:layout_width="wrap_content"
         android:layout_height="50dp"

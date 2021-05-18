@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -34,24 +36,37 @@ import java.security.MessageDigest;
 
 public class LoginActivity extends AppCompatActivity {
 
+
+    DbHelper helper;
+    SQLiteDatabase db;
     private EditText login_id, login_pwd;
     private Button login_btn, register_btn;
-    private static ServerInfo si = new ServerInfo();
-    private static String IP_ADDRESS = si.getIPaddress();
-    private ISessionCallback mSessionCallback;
+
+    private ISessionCallback mSessionCallback; //for kakao
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        helper = new DbHelper(this);
 
-        //아이디 값 찾아주기
-        login_id = findViewById(R.id.login_id);
-        login_pwd = findViewById(R.id.login_pwd);
-        login_btn = findViewById(R.id.login_btn);
-        register_btn = findViewById(R.id.register_btn);
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
 
+        login_id        = findViewById(R.id.login_id);
+        login_pwd       = findViewById(R.id.login_pwd);
+
+        login_id.setText("");
+        login_pwd.setText("");
+
+        login_btn       = findViewById(R.id.login_btn);
+        register_btn    = findViewById(R.id.register_btn);
+
+        //Go to RegisterActivity
         register_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,44 +75,25 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //Check database
         login_btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {//Eidt Text에 입력되어 있는 값 가져오기
                 String userID = login_id.getText().toString();
                 String userPwd = login_pwd.getText().toString();
 
-                Response.Listener<String> responseListener;
-                responseListener = new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            //System.out.println("response : " + response);
-
-                            JSONObject jsonObject = new JSONObject(response);
-                            boolean success = jsonObject.getBoolean("success");
-
-
-                            if (success) {
-                                String userID = jsonObject.getString("userID");
-                                String userPwd = jsonObject.getString("userPwd");
-
-                                Toast.makeText(getApplicationContext(), "로그인에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                //intent.putExtra("userID", userID);
-                                //intent.putExtra("userPwd", userPwd);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "로그인에 실패하셨습니다.", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                if      (userID.equals("") || userID == null)               { Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }else if(userPwd.equals("") || userPwd == null)             { Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }else {
+                    String loginRes = helper.isRightUsers(db, userID, userPwd);
+                    if(loginRes == null){
+                        Toast.makeText(getApplicationContext(), "아이디 또는 비밀번호가 맞지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getApplicationContext(), "로그인에 성공하였습니다. "+loginRes+"님 반갑습니다.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
                     }
-                };
-                LoginData loginData = new LoginData(userID, userPwd, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                queue.add(loginData);
 
+                }
             }
         });
 

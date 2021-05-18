@@ -1,5 +1,7 @@
 package com.example.moppo;
 
+import java.util.ArrayList;
+
 public class UserInfo {
     private String nick;
 

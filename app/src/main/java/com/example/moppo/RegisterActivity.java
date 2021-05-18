@@ -1,5 +1,8 @@
 package com.example.moppo;
 
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,37 +13,57 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText et_id,et_pass,et_name,et_nick;
-    private Button register_btn;
 
-    private static ServerInfo si = new ServerInfo();
-    private static String IP_ADDRESS = si.getIPaddress();
-    private static String TAG = "phptest";
+    DbHelper helper;
+    SQLiteDatabase db;
+    private EditText et_id, et_pass, et_name, et_nick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        helper = new DbHelper(this);
 
-        //아이디 값 찾아주기
-        et_id=findViewById(R.id.et_id);
-        et_pass=findViewById(R.id.et_pass);
-        et_name=findViewById(R.id.et_name);
-        et_nick=findViewById(R.id.et_nick);
-        register_btn=findViewById(R.id.register_btn);
-        register_btn.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){//Eidt Text에 입력되어 있는 값 가져오기
-                String userID=et_id.getText().toString();
-                String userPass=et_pass.getText().toString();
-                String name=et_name.getText().toString();
-                String nickname=et_nick.getText().toString();
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
+        et_id           = (EditText) findViewById(R.id.et_id);
+        et_pass         = (EditText) findViewById(R.id.et_pass);
+        et_name         = (EditText) findViewById(R.id.et_name);
+        et_nick         = (EditText) findViewById(R.id.et_nick);
 
-                RegisterData task = new RegisterData(getApplicationContext());
-                task.execute("http://" + IP_ADDRESS + "/register.php", userID, userPass, name, nickname);
-
-            }
-        });
     }
 
+    public void setTextClear(){
+        et_id.setText("");
+        et_pass.setText("");
+        et_name.setText("");
+        et_nick.setText("");
+    }
 
+    public void register(View target){
+        String id = et_id.getText().toString();
+        String pwd = et_pass.getText().toString();
+        String name = et_name.getText().toString();
+        String nickname = et_nick.getText().toString();
+
+        //users: idx, userID, userPwd, name, nickname, totalMoney, updatedTime
+
+        if      (id.equals("") || id == null)               { Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
+        }else if(pwd.equals("") || pwd == null)             { Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+        }else if(name.equals("") || name == null)           { Toast.makeText(getApplicationContext(), "이름을 입력해주세요.", Toast.LENGTH_SHORT).show();
+        }else if(nickname.equals("") || nickname == null)   { Toast.makeText(getApplicationContext(), "별명을 입력해주세요.", Toast.LENGTH_SHORT).show();
+        }else {
+
+            if(helper.isDupId(db, id)) { //id 중복 check
+                Toast.makeText(getApplicationContext(), "중복된 ID입니다.", Toast.LENGTH_SHORT).show();
+            }else{
+                helper.insertUsers(db, id, pwd, name, nickname);
+                Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                setTextClear();
+            }
+        }
+    }
 }

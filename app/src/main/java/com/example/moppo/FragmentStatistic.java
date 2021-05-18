@@ -20,7 +20,7 @@ import java.util.Calendar;
 
 public class FragmentStatistic extends Fragment{
 
-    GetTodayActivity in=new GetTodayActivity();
+    GetTodayActivity in=new GetTodayActivity(getContext());
     Calendar cal = Calendar.getInstance();
     int month = cal.get(cal.MONTH) + 1;
     int date = cal.get(cal.DATE);
@@ -38,7 +38,7 @@ public class FragmentStatistic extends Fragment{
         }
 
 
-        // setGraph(values);
+        //setGraph(values);
 
     }
     //그래프 설정
