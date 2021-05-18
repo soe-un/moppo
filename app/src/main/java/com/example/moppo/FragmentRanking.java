@@ -26,7 +26,6 @@ public class FragmentRanking extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-
         return inflater.inflate(R.layout.fragment_ranking,container, false);
     }
 
