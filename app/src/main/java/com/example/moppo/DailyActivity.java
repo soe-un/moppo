@@ -40,15 +40,17 @@ public class DailyActivity extends AppCompatActivity {
     DbHelper helper;
     SQLiteDatabase db;
 
-    private String userID;  //static variable from Main
-    private int idx;        // static variable from Main
-
     private ArrayList<DailyPlan> mPlanList = new ArrayList<>();
     private CalendarAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
+
     String selectedDate;
     int realIncome = 0;
+    private String userID;  //static variable from Main
+    private int ID_idx;     // static variable from Main
+    private int server_idx;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class DailyActivity extends AppCompatActivity {
         TextView date = (TextView) findViewById(R.id.date);
         selectedDate = intent.getExtras().getString("DATE");
         userID = intent.getStringExtra("userID");
-        idx = intent.getIntExtra("idx", 0);
+        ID_idx = intent.getIntExtra("idx", 0);
 
         date.setText(selectedDate);
 
@@ -129,27 +131,34 @@ public class DailyActivity extends AppCompatActivity {
                         intIncome = 100000;
                         break;
                     case 2:
-                        intIncome = 800000;
+                        intIncome = 80000;
                         break;
                     case 3:
-                        intIncome = 500000;
+                        intIncome = 50000;
                         break;
                     case 4:
-                        intIncome = 250000;
+                        intIncome = 25000;
                         break;
                     default:
                         Toast.makeText(DailyActivity.this, "4가 최대입니다.", Toast.LENGTH_SHORT).show();
                         return;
                 }
 
-                //플랜 추가
+                //플랜 추가 .. &이거 다시 생각해보기
                 DailyPlan planItem;
                 if (intOrder > possibleOrder) {
-                    planItem = new DailyPlan(plan, false, intOrder, -1);
+                    planItem = new DailyPlan(plan, false, intOrder, -1, -1);
                 } else {
-                    planItem = new DailyPlan(plan, false, intOrder, intIncome);
+                    planItem = new DailyPlan(plan, false, intOrder, intIncome, -1);
+                }
+                PlansTable pt = planItem.toPlansTable(-1, selectedDate);
+                helper.putLocalDB(db, pt, 1);
+                Cursor cursor = helper.readRecentRecord(db);
+                if(cursor.moveToNext()){
+                    planItem.setLocalIdx(cursor.getInt(cursor.getColumnIndex("idx")));
                 }
                 mPlanList.add(planItem);
+
 
                 //추가될 때마다 기존 수입들도 바꾸기
                 /*for (int i = 0; i < mPlanList.size(); i++) {
@@ -276,9 +285,6 @@ public class DailyActivity extends AppCompatActivity {
 
         realIncome = 0;
 
-        String[] planlist = new String[4];
-        int[] flaglist = new int[4];
-
         TextView totalIncome = (TextView) findViewById(R.id.total_income);
 
         if (IsRepeat()) { //우선순위 중복이면 저장 x
@@ -293,24 +299,12 @@ public class DailyActivity extends AppCompatActivity {
 
         //빈 item 없는지 check 해주세요
         for (DailyPlan item : mPlanList) { //plan 추가
-            int order = item.getOrder() - 1;
-            planlist[order] = item.getPlan();
-            System.out.println(order+": "+planlist[order]);
-            if(item.getSelected()){
-                flaglist[order] = 1;
-                realIncome += item.getIncome();
-            }else{
-                flaglist[order] = 0;
-            }
-            System.out.println(order+": "+flaglist[order]);
+            PlansTable pt = new PlansTable(server_idx, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
+
         }
         //PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
         //System.out.println(plansTable);
         //helper.insertPlan(db, plansTable, selectedDate);
-
-        MoneyTable moneyTable = new MoneyTable(idx, realIncome);
-        System.out.println(moneyTable);
-        helper.insertMoney(db, moneyTable);
 
         totalIncome.setText("총 수입: " + realIncome);
         Toast.makeText(DailyActivity.this, "총수입이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
@@ -355,15 +349,17 @@ public class DailyActivity extends AppCompatActivity {
 
     private void read() { //DB 읽어오기
 
+
         Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
 
         while (cursor.moveToNext()){
             String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
+            int localidx = cursor.getInt(cursor.getColumnIndex("idx"));
             boolean isSelected = cursor.getInt(cursor.getColumnIndex("is_complete")) == 1? true : false;
             int order = cursor.getInt(cursor.getColumnIndex("plan_order"));
             int income = cursor.getInt(cursor.getColumnIndex("income"));
 
-            DailyPlan dp = new DailyPlan(plan, isSelected, order, income);
+            DailyPlan dp = new DailyPlan(plan, isSelected, order, income, localidx);
             mPlanList.add(dp);
         }
 

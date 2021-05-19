@@ -1,6 +1,8 @@
 package com.example.moppo;
 
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.CustomViewHolder> {
+
+    DbHelper helper;
+    SQLiteDatabase db;
 
     private ArrayList<DailyPlan> dailyPlans;
     private Context mContext;
@@ -47,6 +52,14 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
             this.cb = (CheckBox) itemView.findViewById(R.id.cb_it);
             this.edit_btn = (ImageButton) itemView.findViewById(R.id.edit_btn_it);
             this.remove_btn = (ImageView) itemView.findViewById(R.id.remove_btn_it);
+
+            helper = new DbHelper(mContext.getApplicationContext());
+
+            try{ //get database
+                db = helper.getWritableDatabase();
+            }catch (SQLException ex){
+                db = helper.getReadableDatabase();
+            }
         }
     }
 
@@ -86,7 +99,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
                 //입력되어 있던 데이터
                 editTextPlan.setText(dailyPlans.get(holder.getAdapterPosition()).getPlan());
-                editTextOrder.setText(dailyPlans.get(holder.getAdapterPosition()).getOrder());
+                editTextOrder.setText(String.valueOf(dailyPlans.get(holder.getAdapterPosition()).getOrder()));
 
                 final AlertDialog dialog = builder.create();
 
@@ -120,13 +133,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                                 intIncome = 100000;
                                 break;
                             case 2:
-                                intIncome = 800000;
+                                intIncome = 80000;
                                 break;
                             case 3:
-                                intIncome = 500000;
+                                intIncome = 50000;
                                 break;
                             case 4:
-                                intIncome = 250000;
+                                intIncome = 25000;
                                 break;
                             default:
                                 Toast.makeText(v.getContext(),"4가 최대입니다.", Toast.LENGTH_SHORT).show();
@@ -136,12 +149,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         //플랜 변경
                         DailyPlan planItem;
                         if(order > possibleOrder ) {
-                            planItem = new DailyPlan(plan, false, order, -1);
+                            planItem = new DailyPlan(plan, false, order, -1, dailyPlan.getLocalIdx());
                         } else{
-                            planItem = new DailyPlan(plan, false, order, intIncome);
+                            planItem = new DailyPlan(plan, false, order, intIncome, dailyPlan.getLocalIdx());
                         }
+                        helper.updateLocalDB(db, planItem);
+                        System.out.println(planItem.getLocalIdx());
                         dailyPlans.set(holder.getAdapterPosition(), planItem);
-
                         //업데이트
                         notifyItemChanged(holder.getAdapterPosition());
 
@@ -158,7 +172,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
             @Override
             public void onClick(View v) {
                 int removePosition = (int) v.getTag();
+                System.out.println(dailyPlans.get(removePosition).getLocalIdx());
+                helper.deleteLocalDB(db, dailyPlans.get(removePosition).getLocalIdx());
                 dailyPlans.remove(removePosition); // 그 아이템 삭제
+
 
                 /*
                 //삭제될 때마다 기존 수입들도 바꾸기
@@ -223,6 +240,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //여기 dailyPlan이 final 키워드를 붙인 모델 클래스의 객체와 동일
                 dailyPlan.setSelected(isChecked);
+                helper.updateLocalDB(db, dailyPlan);
             }
         });
     }

@@ -5,6 +5,7 @@ public class DailyPlan {
     private boolean isSelected;//일정을 완료했는지
     private int order; //우선순위
     private int income; //수입
+    private int localIdx;
 
     public String getPlan() {
         return plan;
@@ -38,10 +39,26 @@ public class DailyPlan {
         this.income = income;
     }
 
-    public DailyPlan(String plan, boolean isSelected, int order, int income) {
+    public int getLocalIdx() {
+        return localIdx;
+    }
+
+    public void setLocalIdx(int localIdx) {
+        this.localIdx = localIdx;
+    }
+
+    public PlansTable toPlansTable(int server_idx, String timestamp){
+        PlansTable pt = new PlansTable(server_idx, plan, order, income, isSelected, timestamp);
+        return pt;
+    }
+
+    public DailyPlan(String plan, boolean isSelected, int order, int income, int localIdx) {
         this.plan = plan;
         this.isSelected = isSelected;
         this.order = order;
         this.income = income;
+        this.localIdx = localIdx;
     }
+
+
 }

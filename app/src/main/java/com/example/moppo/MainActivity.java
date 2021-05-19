@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
+                    helper.cleanLocalDB(db);
 
                     for(int i = 0 ; i<jsonArray.length() ; i++){
                         JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         String timestamp = tmpjsonobj.getString("timestamp");
 
                         PlansTable plansTable = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, plansTable);
+                        helper.putLocalDB(db, plansTable, 0);
 
                     }
                 } catch (JSONException e) {
@@ -155,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
         UsersTable usersTable = new UsersTable(responseListener, String.valueOf(idx));
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(usersTable);
-
 
     }
 }

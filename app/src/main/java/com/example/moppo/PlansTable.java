@@ -1,9 +1,5 @@
 package com.example.moppo;
 
-import com.android.volley.toolbox.StringRequest;
-
-import java.util.Arrays;
-
 public class PlansTable {
 
     int server_idx;

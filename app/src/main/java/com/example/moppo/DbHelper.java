@@ -9,7 +9,7 @@ import com.kakao.usermgmt.response.model.User;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moppo.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
 
     public DbHelper(Context context){
@@ -22,7 +22,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE plans (idx INTEGER not null PRIMARY KEY AUTOINCREMENT, "+
                 "server_idx INTEGER not null, "+
                 "plan_name TEXT not null, plan_order INTEGER not null, income INTEGER not null,"+
-                "is_complete BOOLEAN not null, timestamp TEXT not null);");
+                "is_complete BOOLEAN not null, is_updated INTEGER not null, timestamp TEXT not null);");
 
         //plans: idx, server_idx, plan_name, plan_order, income, is_complete, timestamp
         //------------------------------------------------------각 우선순위가 성공되었으면 1, 아니면 0
@@ -32,55 +32,52 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS plans");
+        db.execSQL("DROP TABLE IF EXISTS users");
+        db.execSQL("DROP TABLE IF EXISTS money");
         onCreate(db);
     }
 
-    public void putLocalDB(SQLiteDatabase db, PlansTable pt){
-        String q = String.format("INSERT INTO plans (idx, server_idx, plan_name, plan_order, income, is_complete, timestamp)"+
-                "VALUES (null, %d, '%s', %d, %d, %s, date('%s'));", pt.getServer_idx(), pt.getPlan_name(),
-                pt.getPlan_order(), pt.getIncome(), pt.getIs_complete()==true?"true":"false", pt.getTimestamp());
+    public void putLocalDB(SQLiteDatabase db, PlansTable pt, int isLocal){
+
+        String q = String.format("INSERT INTO plans (idx, server_idx, plan_name, plan_order, income, is_complete, timestamp, is_updated)"+
+                "VALUES (null, %d, '%s', %d, %d, %s, date('%s'), %d);", pt.getServer_idx(), pt.getPlan_name(),
+                pt.getPlan_order(), pt.getIncome(), pt.getIs_complete()==true?"true":"false", pt.getTimestamp(), isLocal);
+
+        db.execSQL(q);
+    }
+
+    public void updateLocalDB(SQLiteDatabase db, DailyPlan dp){
+        String q = String.format("UPDATE plans SET plan_name = '%s', plan_order = %d, "+
+                        "income = %d, is_complete = %s, is_updated = 1 WHERE idx = %d",
+                dp.getPlan(), dp.getOrder(), dp.getIncome(), dp.getSelected()==true?"true":"false", dp.getLocalIdx());
+
+        db.execSQL(q);
+    }
+
+    public void deleteLocalDB(SQLiteDatabase db, int idx){
+        String q = String.format("UPDATE plans SET is_updated = 2 WHERE idx = %d", idx);
 
         db.execSQL(q);
     }
 
     public Cursor readLocalDBPlanlist(SQLiteDatabase db, String selectedDate){
-        String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s');", selectedDate);
+        String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
         Cursor cursor = db.rawQuery(q, null);
 
         return cursor;
     }
 
-
-    //플랜 추가
-    public void insertPlan(SQLiteDatabase db, PlansTable pt, String selectedDate){
-
-        /*
-        //CHECK THIS IS UPDATE...
-        String todaytime = selectedDate;
-        Cursor cursor = db.rawQuery("SELECT * from plans WHERE date(timestamp) = date('"+todaytime+"');", null);
-
-        while (cursor.moveToNext()) { //당일 생성 record 존재 시 삭제 후 재생성
-            int tmpid = cursor.getInt(cursor.getColumnIndex("userNo"));
-            db.execSQL("DELETE FROM plans WHERE date(timestamp) = date('"+todaytime+"') AND userNo ="+tmpid+";");
-        }
-
-        cursor.close();
-
-        //생성
-        db.execSQL("INSERT INTO plans (idx, userNo, timestamp, first, flagOne) VALUES(null, "+ pt.getUserNo() +", datetime(selectedDate), '" +
-                pt.getPlanlist()[0] + "',"+ pt.getFlaglist()[0] +");" );
-
-        //plans: idx, userNo, timestamp, first, second, third, fourth, flagOne, flagTwo, flagThree, flagFour
-
-        for(int i = 1 ; i < 4 ; i ++){
-            for(int j = 1 ; j < 4 ; j ++){
-                if(i == j && (pt.getPlanlist()[i] != null)){
-                    //db.execSQL("UPDATE plans SET "+ plansPlanCols[i] +"='"+pt.getPlanlist()[i]+"', "+plansFlagCols[j]+"= "+ pt.getFlaglist()[j]
-                           // + " WHERE date(timestamp) = (date('"+todaytime+"')) AND userNo ="+pt.getUserNo()+";" );
-                }
-            }
-        }*/
+    public void cleanLocalDB(SQLiteDatabase db){
+        String q = String.format("DELETE from plans;");
+        db.execSQL(q);
     }
+
+    public Cursor readRecentRecord(SQLiteDatabase db){
+        String q = String.format("SELECT * from plans order by idx desc limit 1;");
+        Cursor cursor = db.rawQuery(q, null);
+        return cursor;
+    }
+
 
     //돈 추가 - 입금
     //money: idx, userNo, timestamp, typeFlag, typeMoney, typeNo
