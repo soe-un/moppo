@@ -160,19 +160,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-    //로그인 확인
-    public String isRightUsers(SQLiteDatabase db, String id, String pwd){
-        //실패 시 null, 성공 시 user의 nickname 반환
-        String result = null;
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE userID = '"+id+"' AND userPwd = '"+pwd+"';", null);
-        if(cursor.moveToNext()){
-            result = cursor.getString(cursor.getColumnIndex("nickname"));
-        }else{
-            result = null;
-        }
-        return result;
-    }
-
     //전체 리스트 반환 (순서는 가입 순)
     public Cursor getRankList(SQLiteDatabase db){
         Cursor cursor = db.rawQuery("SELECT * FROM users;", null);

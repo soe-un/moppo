@@ -9,12 +9,17 @@ import java.util.Map;
 
 public class UsersTable extends StringRequest {
     final static private ServerInfo si = new ServerInfo();
-    final static private String URL = si.getLoginURL();
-    final static private String rURL = si.getRegisterURL();
+    final static private String loURL = si.getLoginURL();
+    final static private String reURL = si.getRegisterURL();
+    final static private String raURL = si.getRankingURL();
     private Map<String, String> map;
 
+    public UsersTable (Response.Listener<String> listener){ //To Ranking
+        super(Method.POST, raURL, listener, null);
+    }
+
     public UsersTable (Response.Listener<String> listener, String userID, String userPwd){ //To Login
-        super(Method.POST, URL, listener, null);
+        super(Method.POST, loURL, listener, null);
 
         map = new HashMap<>();
         map.put("userID", userID);
@@ -22,7 +27,7 @@ public class UsersTable extends StringRequest {
     }
 
     public UsersTable (Response.Listener<String> listener, String ... params){ //To Register
-        super(Method.POST, rURL, listener, null);
+        super(Method.POST, reURL, listener, null);
 
         map = new HashMap<>();
         map.put("userID", params[0]);

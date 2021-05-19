@@ -29,10 +29,13 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
         Button support;
 
         public CustomViewHolder(@NonNull View itemView) {
+
             super(itemView);
             this.profile = (ImageView) itemView.findViewById(R.id.profile_it);
             this.nickname = (TextView) itemView.findViewById(R.id.nickname_it);
             this.support = (Button) itemView.findViewById(R.id.support_it);
+
+            System.out.println("CustomViewHolder");
         }
 
         public TextView getNickname(){
@@ -44,12 +47,13 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
     @Override
     public RankingAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {//뷰홀더 객체 생성
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_list,parent,false);
-
+        System.out.println("onCreateViewHolder");
         return new CustomViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RankingAdapter.CustomViewHolder holder, int position) {//데이터를 뷰홀더에 바인딩
+        System.out.println("position: "+position+", users: "+users.get(position).getNick());
         holder.getNickname().setText(users.get(position).getNick());
     }
 
