@@ -78,88 +78,22 @@ public class DbHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-
-    //돈 추가 - 입금
-    //money: idx, userNo, timestamp, typeFlag, typeMoney, typeNo
-    //-------------------------------입금: 0
-    //-------------------------------출금: 1
-    //---------------------------------------------------자기자신일 경우 우선순위를 통해 입금된 것
-    public void insertMoney(SQLiteDatabase db, MoneyTable mt){
-        int tmpusermoney = getTotalMoneybyIdx(db, mt.getUserNo());
-        int tmptypemoney = getTotalMoneybyIdx(db, mt.getTypeNo());
-
-        if (mt.getUserNo() == mt.getTypeNo()){ //add just one record
-
-            db.execSQL("INSERT INTO money VALUES(null, " + mt.getUserNo() + ", datetime('now', 'localtime'), "
-                    + mt.getTypeFlag() + ","+ mt.getTypeMoney() +"," + mt.getTypeNo() + ");");
-
-            tmpusermoney += mt.getTypeMoney();
-
-            db.execSQL("UPDATE users SET totalMoney = "+ tmpusermoney +", updatedTime = datetime('now', 'localtime') where idx = "+mt.getUserNo()+";");
-        }else{ //add two record
-            int tmptypeflag;
-
-            if(mt.getTypeFlag() == 0){
-                tmpusermoney += mt.getTypeMoney();
-                tmptypemoney -= mt.getTypeMoney();
-                tmptypeflag = 1;
-            }else{
-                tmpusermoney -= mt.getTypeMoney();
-                tmptypemoney += mt.getTypeMoney();
-                tmptypeflag = 0;
-            }
-
-            //주체
-            db.execSQL("INSERT INTO money VALUES(null, " + mt.getUserNo() + ", datetime('now', 'localtime'), "
-                    + mt.getTypeFlag() + ","+ mt.getTypeMoney() +"," + mt.getTypeNo() + ");");
-            //상대
-            db.execSQL("INSERT INTO money VALUES(null, " + mt.getTypeMoney() + ", datetime('now', 'localtime'), "
-                    + tmptypeflag + ","+ mt.getUserNo() +"," + mt.getTypeNo() + ");");
-
-            db.execSQL("UPDATE users SET totalMoney = "+ tmpusermoney +", updatedTime = datetime('now', 'localtime') where idx = "+mt.getUserNo()+";");
-            db.execSQL("UPDATE users SET totalMoney = "+ tmptypemoney +", updatedTime = datetime('now', 'localtime') where idx = "+mt.getTypeNo()+";");
-
-        }
-
-    }
-
-
-    //plan list 반환
-    public Cursor getPlanlist(SQLiteDatabase db, int userNo, String todayTime){
-        Cursor cursor = db.rawQuery("SELECT * FROM plans WHERE date(timestamp) = date('"+todayTime+"') AND userNo = " + userNo + ";", null);
+    public Cursor goToServerToInsert(SQLiteDatabase db){
+        String q = String.format("SELECT * from plans WHERE server_idx = -1 AND is_updated = 1;");
+        Cursor cursor = db.rawQuery(q, null);
         return cursor;
     }
 
-    //users 에서 ID (string)로 IDX(int) 찾기
-    public int getIdxbyID(SQLiteDatabase db, String id){
-        int result;
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE userID = '"+id+"';", null);
-        cursor.moveToFirst();
-        result = cursor.getInt(cursor.getColumnIndex("idx"));
-        cursor.close();
-        return result;
+    public Cursor goToServerToDelete(SQLiteDatabase db){
+        String q = String.format("SELECT * from plans WHERE server_idx != -1 AND is_updated = 2;");
+        Cursor cursor = db.rawQuery(q, null);
+        return cursor;
     }
 
-    //users 에서 idx(int)로 totalMoeny(int) 찾기
-    public int getTotalMoneybyIdx(SQLiteDatabase db, int idx){
-        int result = 0;
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE idx = "+idx+";", null);
-        if(cursor.moveToFirst()){
-            result = cursor.getInt(cursor.getColumnIndex("totalMoney"));
-        }
-        cursor.close();
-        return result;
+    public Cursor goToServerToUpdate(SQLiteDatabase db){
+        String q = String.format("SELECT * from plans WHERE server_idx != -1 AND is_updated = 1;");
+        Cursor cursor = db.rawQuery(q, null);
+        return cursor;
     }
-
-    //plans 에서 idx(int)로 timestamp 찾기
-    public String getTimestampbyIdx(SQLiteDatabase db, int idx){
-        String result;
-        Cursor cursor = db.rawQuery("SELECT timestamp FROM plans WHERE idx = "+idx+";", null);
-        cursor.moveToFirst();
-        result = cursor.getString(cursor.getColumnIndex("timestamp"));
-        cursor.close();
-        return result;
-    }
-
 
 }

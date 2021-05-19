@@ -49,7 +49,6 @@ public class DailyActivity extends AppCompatActivity {
     int realIncome = 0;
     private String userID;  //static variable from Main
     private int ID_idx;     // static variable from Main
-    private int server_idx;
 
 
     @Override
@@ -87,6 +86,57 @@ public class DailyActivity extends AppCompatActivity {
 
         TextView totalIncome = (TextView) findViewById(R.id.total_income);
         totalIncome.setText("총 수입: " + realIncome);
+    }
+
+    public JSONArray goToServer(Cursor cursor) throws JSONException {
+        cursor = helper.goToServerToInsert(db);
+        JSONArray plansTables = new JSONArray();
+
+        while (cursor.moveToNext()){
+            int server_idx = cursor.getInt(cursor.getColumnIndex("server_idx"));
+            String plan_name = cursor.getString(cursor.getColumnIndex("plan_name"));
+            int plan_order = cursor.getInt(cursor.getColumnIndex("plan_order"));
+            int income = cursor.getInt(cursor.getColumnIndex("income"));
+            boolean is_complete = cursor.getInt(cursor.getColumnIndex("is_complete")) == 1? true : false;
+            String timestamp = cursor.getString(cursor.getColumnIndex("timestamp"));
+
+            PlansTable tmp = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+            try {
+                String jsonPaln = tmp.toString();
+                JSONObject jsonObject = new JSONObject(jsonPaln);
+                plansTables.put(jsonObject);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        if(plansTables.length() == 0){
+            try{
+                JSONObject jsonObject = new JSONObject("{\"empty\":\"yes\"}");
+                plansTables.put(jsonObject);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return plansTables;
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        
+        try {
+            //insert record
+            JSONArray insertPlans = goToServer(helper.goToServerToInsert(db));
+            //update record
+            JSONArray updatePlans = goToServer(helper.goToServerToUpdate(db));
+            //delete record
+            JSONArray deletePlans = goToServer(helper.goToServerToDelete(db));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public void add(View v) {
@@ -281,6 +331,7 @@ public class DailyActivity extends AppCompatActivity {
         }
     }*/
 
+    //봉인.
     public void store(View v) { //DB에 저장
 
         realIncome = 0;
@@ -299,8 +350,7 @@ public class DailyActivity extends AppCompatActivity {
 
         //빈 item 없는지 check 해주세요
         for (DailyPlan item : mPlanList) { //plan 추가
-            PlansTable pt = new PlansTable(server_idx, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
-
+            //PlansTable pt = new PlansTable(server_idx, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
         }
         //PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
         //System.out.println(plansTable);

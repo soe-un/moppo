@@ -18,6 +18,18 @@ public class PlansTable {
         this.timestamp = timestamp;
     }
 
+    @Override
+    public String toString() {
+        return "{ \"server_idx\": " + server_idx +
+                ",\"plan_name\":\"" + plan_name + '\"' +
+                ",\"plan_order\":" + plan_order +
+                ", \"income\":" + income +
+                ", \"is_complete\":" + is_complete +
+                ", \"timestamp\":\"" + timestamp + '\"' +
+                ", \"empty\":\"no\""+
+                '}';
+    }
+
     public int getServer_idx() {
         return server_idx;
     }
