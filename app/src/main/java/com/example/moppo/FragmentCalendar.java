@@ -20,12 +20,19 @@ import java.util.Calendar;
 public class FragmentCalendar extends Fragment implements OnDateSelectedListener{
     MaterialCalendarView cal;
     final TodayDecorator todayDecorator = new TodayDecorator();
+    static String userID;
+    static int idx;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+
+        Bundle bundle = getArguments();
+        userID = bundle.getString("userID");
+        idx = bundle.getInt("idx");
+
         return inflater.inflate(R.layout.fragment_calendar,container, false);
     }
 
@@ -58,10 +65,12 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         int year = date.getYear();
         int month = date.getMonth() + 1;
         int day = date.getDay();
-        String selectedDate = year + "." + month + "." + day;
+        String selectedDate = String.format("%04d-%02d-%02d", year, month, day); //format 통일
 
         Intent intent = new Intent(getActivity(), DailyActivity.class);
         intent.putExtra("DATE",selectedDate);
+        intent.putExtra("idx", idx);
+        intent.putExtra("userID", userID);
         startActivity(intent);
     }
 }

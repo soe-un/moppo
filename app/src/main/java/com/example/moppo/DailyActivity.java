@@ -1,6 +1,9 @@
 package com.example.moppo;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +29,11 @@ import java.util.ArrayList;
 
 public class DailyActivity extends AppCompatActivity {
 
+    DbHelper helper;
+    SQLiteDatabase db;
+    private String userID;  //static variable from Main
+    private int idx;        // static variable from Main
+
     private ArrayList<DailyPlan> mPlanList = new ArrayList<>();
     private CalendarAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -47,12 +55,23 @@ public class DailyActivity extends AppCompatActivity {
         mAdapter = new CalendarAdapter(this, mPlanList);
         mRecyclerView.setAdapter(mAdapter);
 
+        helper = new DbHelper(this);
+
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
+
         Intent intent = getIntent();
 
         //CalendarActivity 선택한 날짜 받아오기
         TextView date = (TextView) findViewById(R.id.date);
         selectedDate = intent.getExtras().getString("DATE");
         date.setText(selectedDate);
+
+        userID = getIntent().getStringExtra("userID");
+        idx = getIntent().getIntExtra("idx", 0);
 
         read();
         mAdapter.notifyDataSetChanged();
@@ -197,7 +216,7 @@ public class DailyActivity extends AppCompatActivity {
         return true;
     }
 
-    public void store(View v) { //파일에 저장
+    /*public void store(View v) { //파일에 저장
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         DataOutputStream dos = null;
@@ -244,9 +263,54 @@ public class DailyActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }*/
+
+    public void store(View v) { //DB에 저장
+
+        realIncome = 0;
+
+        String[] planlist = new String[4];
+        int[] flaglist = new int[4];
+
+        TextView totalIncome = (TextView) findViewById(R.id.total_income);
+
+        if (IsRepeat()) { //우선순위 중복이면 저장 x
+            Toast.makeText(DailyActivity.this, "우선순위 중복으로 저장에 실패했습니다.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!IsRight()) { //우선순위가 일정 수보다 크면 저장 x
+            Toast.makeText(DailyActivity.this, "우선순위가 일정의 수를 넘어\n저장에 실패했습니다.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //빈 item 없는지 check 해주세요
+        for (DailyPlan item : mPlanList) { //plan 추가
+            int order = Integer.parseInt(item.getOrder()) - 1;
+            planlist[order] = item.getPlan();
+            System.out.println(order+": "+planlist[order]);
+            if(item.getSelected()){
+                flaglist[order] = 1;
+                realIncome += Integer.parseInt(item.getIncome());
+            }else{
+                flaglist[order] = 0;
+            }
+            System.out.println(order+": "+flaglist[order]);
+        }
+        PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
+        System.out.println(plansTable);
+        helper.insertPlan(db, plansTable, selectedDate);
+
+        MoneyTable moneyTable = new MoneyTable(idx, realIncome);
+        System.out.println(moneyTable);
+        helper.insertMoney(db, moneyTable);
+
+        totalIncome.setText("총 수입: " + realIncome);
+        Toast.makeText(DailyActivity.this, "총수입이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
+
     }
 
-    private void read() { //파일 읽어오기
+    /*private void read() { //파일 읽어오기
         FileInputStream fis = null;
         BufferedInputStream bis = null;
         DataInputStream dis = null;
@@ -280,5 +344,42 @@ public class DailyActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }*/
+
+    private void read() { //DB 읽어오기
+        System.out.println("Date: "+selectedDate);
+        System.out.println("userID: "+userID+", idx: "+idx);
+        String[] plansPlanCols;
+        plansPlanCols = new String[]{"first", "second", "third", "fourth"};
+
+        String[] plansFlagCols;
+        plansFlagCols = new String[]{"flagOne", "flagTwo", "flagThree", "flagFour"};
+
+        Cursor cursor = helper.getPlanlist(db, idx, selectedDate);
+
+        while (cursor.moveToNext()){
+            for(int i = 0 ; i < 4 ; i++) {
+                if(cursor.getString(cursor.getColumnIndex(plansPlanCols[i])) != null) {
+                    String plan = cursor.getString(cursor.getColumnIndex(plansPlanCols[i]));
+                    System.out.println("plan: "+plan);
+                    int intisSelected = cursor.getInt(cursor.getColumnIndex(plansFlagCols[i]));
+                    boolean isSelected;
+                    if (intisSelected == 1) {
+                        isSelected = true;
+                    } else {
+                        isSelected = false;
+                    }
+                    String order = String.format("%d",i+1);
+                    String income = String.format("%d", helper.getTotalMoneybyIdx(db, idx));
+
+                    DailyPlan dailyPlan = new DailyPlan(plan, isSelected, order, income);
+                    mPlanList.add(dailyPlan);
+                }
+            }
+        }
+
+        cursor.close();
+
+
     }
 }

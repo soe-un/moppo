@@ -34,11 +34,16 @@ public class MainActivity extends AppCompatActivity {
     private FragmentCalendar fragmentCalendar = new FragmentCalendar();
     private FragmentRanking fragmentRanking = new FragmentRanking();
     private FragmentStatistic fragmentStatistic = new FragmentStatistic();
+    static String userID;
+    static int idx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        userID = getIntent().getStringExtra("userID");
+        idx = getIntent().getIntExtra("idx", 0);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frameLayout,fragmentCalendar).commitAllowingStateLoss();
@@ -52,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mBottomNV.setSelectedItemId(R.id.calendar);// 캘린더 프래그먼트 선택한 채로 시작
+
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", userID);
+        bundle.putInt("idx", idx);
+
+        fragmentCalendar.setArguments(bundle);
     }
 
     private void BottomNavigate(int id){

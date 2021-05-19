@@ -84,14 +84,40 @@ public class LoginActivity extends AppCompatActivity {
                 if      (userID.equals("") || userID == null)               { Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }else if(userPwd.equals("") || userPwd == null)             { Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }else {
-                    String loginRes = helper.isRightUsers(db, userID, userPwd);
-                    if(loginRes == null){
-                        Toast.makeText(getApplicationContext(), "아이디 또는 비밀번호가 맞지 않습니다.", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(getApplicationContext(), "로그인에 성공하였습니다. "+loginRes+"님 반갑습니다.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
+                    Response.Listener<String> responseListener;
+                    responseListener = new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+
+                                JSONObject jsonObject = new JSONObject(response);
+                                boolean success = jsonObject.getBoolean("success");
+
+                                if (success) {
+                                    Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
+
+                                    String userID = jsonObject.getString("userID");
+                                    int userIdx = jsonObject.getInt("useridx");
+
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.putExtra("userID", userID);
+                                    intent.putExtra("idx", userIdx);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "로그인 실패, 아이디 및 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    UsersTable usersTable = new UsersTable(responseListener, userID, userPwd);
+                    RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+                    queue.add(usersTable);
+
+
+
 
                 }
             }
