@@ -1,68 +1,65 @@
 package com.example.moppo;
 
+import com.android.volley.toolbox.StringRequest;
+
 import java.util.Arrays;
 
 public class PlansTable {
-    //plans: idx, userNo, timestamp, first, second, third, fourth, flagOne, flagTwo, flagThree, flagFour
-    //-------------------------------------------------------------각 우선순위가 성공되었으면 1, 아니면 0
-    //ref--FOREIGN KEY (userNo) REFERENCES users(idx)
 
-    int idx;
-    int userNo;
-    String[] planlist;
-    int[] flaglist;
+    int server_idx;
+    String plan_name;
+    int plan_order;
+    int income;
+    boolean is_complete;
     String timestamp;
 
-    public PlansTable(){
-
+    public PlansTable(int server_idx, String plan_name, int plan_order, int income, boolean is_complete, String timestamp) {
+        this.server_idx = server_idx;
+        this.plan_name = plan_name;
+        this.plan_order = plan_order;
+        this.income = income;
+        this.is_complete = is_complete;
+        this.timestamp = timestamp;
     }
 
-    @Override
-    public String toString() {
-        return "PlansTable{" +
-                "userNo=" + userNo +
-                ", planlist=" + Arrays.toString(planlist) +
-                ", flaglist=" + Arrays.toString(flaglist) +
-                '}';
+    public int getServer_idx() {
+        return server_idx;
     }
 
-    //To add plan
-    public PlansTable(int userNo, String[] planlist, int[] flaglist) {
-        this.userNo = userNo;
-        this.planlist = planlist;
-        this.flaglist = flaglist;
+    public void setServer_idx(int server_idx) {
+        this.server_idx = server_idx;
     }
 
-    public int getIdx() {
-        return idx;
+    public String getPlan_name() {
+        return plan_name;
     }
 
-    public void setIdx(int idx) {
-        this.idx = idx;
+    public void setPlan_name(String plan_name) {
+        this.plan_name = plan_name;
     }
 
-    public int getUserNo() {
-        return userNo;
+    public int getPlan_order() {
+        return plan_order;
     }
 
-    public void setUserNo(int userNo) {
-        this.userNo = userNo;
+    public void setPlan_order(int plan_order) {
+        this.plan_order = plan_order;
     }
 
-    public String[] getPlanlist() {
-        return planlist;
+    public int getIncome() {
+        return income;
     }
 
-    public void setPlanlist(String[] planlist) {
-        this.planlist = planlist;
+    public void setIncome(int income) {
+        this.income = income;
     }
 
-    public int[] getFlaglist() {
-        return flaglist;
+    public boolean getIs_complete() {
+        return is_complete;
     }
 
-    public void setFlaglist(int[] flaglist) {
-        this.flaglist = flaglist;
+    public void setIs_complete(boolean is_complete) {
+        this.is_complete = is_complete;
     }
 
     public String getTimestamp() {

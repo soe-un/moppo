@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -17,6 +19,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
@@ -26,6 +31,10 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.exception.KakaoException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private FragmentCalendar fragmentCalendar = new FragmentCalendar();
     private FragmentRanking fragmentRanking = new FragmentRanking();
     private FragmentStatistic fragmentStatistic = new FragmentStatistic();
+
+    DbHelper helper;
+    SQLiteDatabase db;
+
     static String userID;
     static int idx;
 
@@ -42,8 +55,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        helper = new DbHelper(this);
+
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
+
         userID = getIntent().getStringExtra("userID");
         idx = getIntent().getIntExtra("idx", 0);
+
+        getPlansfromServer(); //Server DB -> Local DB
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frameLayout,fragmentCalendar).commitAllowingStateLoss();
@@ -98,5 +121,41 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void getPlansfromServer() { //DB 읽어오기
+
+        Response.Listener<String> responseListener;
+        responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+
+                    for(int i = 0 ; i<jsonArray.length() ; i++){
+                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
+
+                        int server_idx = tmpjsonobj.getInt("server_idx");
+                        String plan_name = tmpjsonobj.getString("plan_name");
+                        int plan_order = tmpjsonobj.getInt("plan_order");
+                        int income = tmpjsonobj.getInt("income");
+                        boolean is_complete = tmpjsonobj.getBoolean("is_complete");
+                        String timestamp = tmpjsonobj.getString("timestamp");
+
+                        PlansTable plansTable = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+                        helper.putLocalDB(db, plansTable);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        UsersTable usersTable = new UsersTable(responseListener, String.valueOf(idx));
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(usersTable);
+
+
     }
 }

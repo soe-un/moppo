@@ -18,6 +18,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -31,6 +39,7 @@ public class DailyActivity extends AppCompatActivity {
 
     DbHelper helper;
     SQLiteDatabase db;
+
     private String userID;  //static variable from Main
     private int idx;        // static variable from Main
 
@@ -46,14 +55,21 @@ public class DailyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily);
 
+        Intent intent = getIntent();
+
+        //CalendarActivity 선택한 날짜 받아오기
+        TextView date = (TextView) findViewById(R.id.date);
+        selectedDate = intent.getExtras().getString("DATE");
+        userID = intent.getStringExtra("userID");
+        idx = intent.getIntExtra("idx", 0);
+
+        date.setText(selectedDate);
+
         //리사이클러뷰
         mRecyclerView = (RecyclerView) findViewById(R.id.PlanList);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, 1));
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new CalendarAdapter(this, mPlanList);
-        mRecyclerView.setAdapter(mAdapter);
 
         helper = new DbHelper(this);
 
@@ -63,18 +79,9 @@ public class DailyActivity extends AppCompatActivity {
             db = helper.getReadableDatabase();
         }
 
-        Intent intent = getIntent();
-
-        //CalendarActivity 선택한 날짜 받아오기
-        TextView date = (TextView) findViewById(R.id.date);
-        selectedDate = intent.getExtras().getString("DATE");
-        date.setText(selectedDate);
-
-        userID = getIntent().getStringExtra("userID");
-        idx = getIntent().getIntExtra("idx", 0);
-
+        mAdapter = new CalendarAdapter(DailyActivity.this, mPlanList);
+        mRecyclerView.setAdapter(mAdapter);
         read();
-        mAdapter.notifyDataSetChanged();
 
         TextView totalIncome = (TextView) findViewById(R.id.total_income);
         totalIncome.setText("총 수입: " + realIncome);
@@ -138,9 +145,9 @@ public class DailyActivity extends AppCompatActivity {
                 //플랜 추가
                 DailyPlan planItem;
                 if (intOrder > possibleOrder) {
-                    planItem = new DailyPlan(plan, false, order, "일정이 늘면 업데이트");
+                    planItem = new DailyPlan(plan, false, intOrder, -1);
                 } else {
-                    planItem = new DailyPlan(plan, false, order, Integer.toString(intIncome));
+                    planItem = new DailyPlan(plan, false, intOrder, intIncome);
                 }
                 mPlanList.add(planItem);
 
@@ -163,24 +170,24 @@ public class DailyActivity extends AppCompatActivity {
                 //추가될 때마다 기존 수입들도 바꾸기
                 for (int i = 0; i < mPlanList.size(); i++) {
                     DailyPlan currentItem = mPlanList.get(i);
-                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+                    int currentOrder = currentItem.getOrder();
 
                     if (currentOrder > mPlanList.size()) {
-                        String currentIncome = "일정이 늘면 업데이트";
+                        int currentIncome = -1;
                         currentItem.setIncome(currentIncome);
                     } else {
                         switch (currentOrder) {
                             case 1:
-                                currentItem.setIncome("100000");
+                                currentItem.setIncome(100000);
                                 break;
                             case 2:
-                                currentItem.setIncome("800000");
+                                currentItem.setIncome(80000);
                                 break;
                             case 3:
-                                currentItem.setIncome("500000");
+                                currentItem.setIncome(50000);
                                 break;
                             case 4:
-                                currentItem.setIncome("250000");
+                                currentItem.setIncome(25000);
                                 break;
                             //default:
                             //    Toast.makeText(DailyActivity.this, "4가 최대입니다.", Toast.LENGTH_SHORT).show();
@@ -202,7 +209,7 @@ public class DailyActivity extends AppCompatActivity {
             DailyPlan plan1 = mPlanList.get(i);
             for (int k = i + 1; k < mPlanList.size(); k++) {
                 DailyPlan plan2 = mPlanList.get(k);
-                if (Integer.parseInt((plan1.getOrder())) == Integer.parseInt(plan2.getOrder()))
+                if ((plan1.getOrder()) == plan2.getOrder())
                     return true;
             }
         }
@@ -211,7 +218,7 @@ public class DailyActivity extends AppCompatActivity {
 
     private boolean IsRight() { //우선순위가 일정 수보다 크지 않은지
         for (DailyPlan item : mPlanList)
-            if (Integer.parseInt(item.getOrder()) > mPlanList.size())
+            if ( item.getOrder() > mPlanList.size() )
                 return false;
         return true;
     }
@@ -286,20 +293,20 @@ public class DailyActivity extends AppCompatActivity {
 
         //빈 item 없는지 check 해주세요
         for (DailyPlan item : mPlanList) { //plan 추가
-            int order = Integer.parseInt(item.getOrder()) - 1;
+            int order = item.getOrder() - 1;
             planlist[order] = item.getPlan();
             System.out.println(order+": "+planlist[order]);
             if(item.getSelected()){
                 flaglist[order] = 1;
-                realIncome += Integer.parseInt(item.getIncome());
+                realIncome += item.getIncome();
             }else{
                 flaglist[order] = 0;
             }
             System.out.println(order+": "+flaglist[order]);
         }
-        PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
-        System.out.println(plansTable);
-        helper.insertPlan(db, plansTable, selectedDate);
+        //PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
+        //System.out.println(plansTable);
+        //helper.insertPlan(db, plansTable, selectedDate);
 
         MoneyTable moneyTable = new MoneyTable(idx, realIncome);
         System.out.println(moneyTable);
@@ -347,39 +354,19 @@ public class DailyActivity extends AppCompatActivity {
     }*/
 
     private void read() { //DB 읽어오기
-        System.out.println("Date: "+selectedDate);
-        System.out.println("userID: "+userID+", idx: "+idx);
-        String[] plansPlanCols;
-        plansPlanCols = new String[]{"first", "second", "third", "fourth"};
 
-        String[] plansFlagCols;
-        plansFlagCols = new String[]{"flagOne", "flagTwo", "flagThree", "flagFour"};
-
-        Cursor cursor = helper.getPlanlist(db, idx, selectedDate);
+        Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
 
         while (cursor.moveToNext()){
-            for(int i = 0 ; i < 4 ; i++) {
-                if(cursor.getString(cursor.getColumnIndex(plansPlanCols[i])) != null) {
-                    String plan = cursor.getString(cursor.getColumnIndex(plansPlanCols[i]));
-                    System.out.println("plan: "+plan);
-                    int intisSelected = cursor.getInt(cursor.getColumnIndex(plansFlagCols[i]));
-                    boolean isSelected;
-                    if (intisSelected == 1) {
-                        isSelected = true;
-                    } else {
-                        isSelected = false;
-                    }
-                    String order = String.format("%d",i+1);
-                    String income = String.format("%d", helper.getTotalMoneybyIdx(db, idx));
+            String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
+            boolean isSelected = cursor.getInt(cursor.getColumnIndex("is_complete")) == 1? true : false;
+            int order = cursor.getInt(cursor.getColumnIndex("plan_order"));
+            int income = cursor.getInt(cursor.getColumnIndex("income"));
 
-                    DailyPlan dailyPlan = new DailyPlan(plan, isSelected, order, income);
-                    mPlanList.add(dailyPlan);
-                }
-            }
+            DailyPlan dp = new DailyPlan(plan, isSelected, order, income);
+            mPlanList.add(dp);
         }
 
-        cursor.close();
-
-
+        mAdapter.notifyDataSetChanged();
     }
 }

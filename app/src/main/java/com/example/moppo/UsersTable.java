@@ -12,10 +12,18 @@ public class UsersTable extends StringRequest {
     final static private String loURL = si.getLoginURL();
     final static private String reURL = si.getRegisterURL();
     final static private String raURL = si.getRankingURL();
+    final static private String plURL = si.getPlanlistingURL();
     private Map<String, String> map;
 
     public UsersTable (Response.Listener<String> listener){ //To Ranking
         super(Method.POST, raURL, listener, null);
+    }
+
+    public UsersTable (Response.Listener<String> listener, String userNo){ //To Plan listing
+        super(Method.POST, plURL, listener, null);
+
+        map = new HashMap<>();
+        map.put("userNo", userNo);
     }
 
     public UsersTable (Response.Listener<String> listener, String userID, String userPwd){ //To Login

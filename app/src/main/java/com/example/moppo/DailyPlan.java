@@ -3,8 +3,8 @@ package com.example.moppo;
 public class DailyPlan {
     private String plan; //일정
     private boolean isSelected;//일정을 완료했는지
-    private String order; //우선순위
-    private String income; //수입
+    private int order; //우선순위
+    private int income; //수입
 
     public String getPlan() {
         return plan;
@@ -18,27 +18,27 @@ public class DailyPlan {
         return isSelected;
     }
 
-    public void setSelected(Boolean selected) {
+    public void setSelected(boolean selected) {
         isSelected = selected;
     }
 
-    public String getOrder() {
+    public int getOrder() {
         return order;
     }
 
-    public void setOrder(String order) {
+    public void setOrder(int order) {
         this.order = order;
     }
 
-    public String getIncome() {
+    public int getIncome() {
         return income;
     }
 
-    public void setIncome(String income) {
+    public void setIncome(int income) {
         this.income = income;
     }
 
-    public DailyPlan(String plan, Boolean isSelected, String order, String income) {
+    public DailyPlan(String plan, boolean isSelected, int order, int income) {
         this.plan = plan;
         this.isSelected = isSelected;
         this.order = order;

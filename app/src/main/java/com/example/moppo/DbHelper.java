@@ -9,19 +9,8 @@ import com.kakao.usermgmt.response.model.User;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moppo.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
-    private String[] plansPlanCols;
-
-    {
-        plansPlanCols = new String[]{"first", "second", "third", "fourth"};
-    }
-
-    private String[] plansFlagCols;
-
-    {
-        plansFlagCols = new String[]{"flagOne", "flagTwo", "flagThree", "flagFour"};
-    }
 
     public DbHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,66 +18,43 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE users (idx INTEGER not null PRIMARY KEY AUTOINCREMENT,"+
-                "userID TEXT not null, userPwd TEXT not null, name TEXT not null, nickname TEXT not null,"+
-                "totalMoney INTEGER not null, updatedTime TEXT not null);");
 
-        db.execSQL("CREATE TABLE money (idx INTEGER not null PRIMARY KEY AUTOINCREMENT,"+
-                "userNo INTEGER not null, timestamp TEXT not null,"+
-                "typeFlag INTEGER not null, typeMoney INTEGER not null, typeNo INTEGER not null,"+
-                "FOREIGN KEY (userNo) REFERENCES users(idx), FOREIGN KEY (typeNo) REFERENCES users(idx));");
+        db.execSQL("CREATE TABLE plans (idx INTEGER not null PRIMARY KEY AUTOINCREMENT, "+
+                "server_idx INTEGER not null, "+
+                "plan_name TEXT not null, plan_order INTEGER not null, income INTEGER not null,"+
+                "is_complete BOOLEAN not null, timestamp TEXT not null);");
 
-        db.execSQL("CREATE TABLE plans (idx INTEGER not null PRIMARY KEY AUTOINCREMENT,"+
-                "userNo INTEGER not null, timestamp TEXT not null,"+
-                "first TEXT not null, second TEXT, third TEXT, fourth TEXT,"+
-                "flagOne INTEGER not null, flagTwo INTEGER, flagThree INTEGER, flagFour INTEGER,"+
-                "FOREIGN KEY (userNo) REFERENCES users(idx));");
-
-        //users: idx, userID, userPwd, name, nickname, totalMoney, updatedTime
-
-        //money: idx, userNo, timestamp, typeFlag, typeMoney, typeNo
-        //------------주체-------------------------------------상대
-        //-------------------------------typeFlag 0: 입금, flag 1: 출금
-        //ref--FOREIGN KEY (userNo) REFERENCES users(idx),
-        //-----FOREIGN KEY (typeNo) REFERENCES users(idx)
-
-        //plans: idx, userNo, timestamp, first, second, third, fourth, flagOne, flagTwo, flagThree, flagFour
-        //-------------------------------------------------------------각 우선순위가 성공되었으면 1, 아니면 0
-        //ref--FOREIGN KEY (userNo) REFERENCES users(idx)
+        //plans: idx, server_idx, plan_name, plan_order, income, is_complete, timestamp
+        //------------------------------------------------------각 우선순위가 성공되었으면 1, 아니면 0
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS users");
-        db.execSQL("DROP TABLE IF EXISTS money");
         db.execSQL("DROP TABLE IF EXISTS plans");
         onCreate(db);
     }
 
-    //중복 ID 확인
-    public boolean isDupId(SQLiteDatabase db, String id){
-        boolean result;
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE userID = '"+id+"';", null);
-        if(cursor.moveToNext()){
-            result = true;
-        } else{
-            result = false;
-        }
-        return result;
+    public void putLocalDB(SQLiteDatabase db, PlansTable pt){
+        String q = String.format("INSERT INTO plans (idx, server_idx, plan_name, plan_order, income, is_complete, timestamp)"+
+                "VALUES (null, %d, '%s', %d, %d, %s, date('%s'));", pt.getServer_idx(), pt.getPlan_name(),
+                pt.getPlan_order(), pt.getIncome(), pt.getIs_complete()==true?"true":"false", pt.getTimestamp());
+
+        db.execSQL(q);
     }
 
-    //회원가입 - 유저 추가
-    public void insertUsers(SQLiteDatabase db, String id, String pwd, String name, String nickname){
-        db.execSQL("INSERT INTO users VALUES(null, '" + id + "','" + pwd + "','" + name +
-                "','" + nickname + "', 0, datetime('now', 'localtime'));");
+    public Cursor readLocalDBPlanlist(SQLiteDatabase db, String selectedDate){
+        String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s');", selectedDate);
+        Cursor cursor = db.rawQuery(q, null);
+
+        return cursor;
     }
+
 
     //플랜 추가
     public void insertPlan(SQLiteDatabase db, PlansTable pt, String selectedDate){
-        /*      db.execSQL("INSERT INTO plans VALUES(null, '"+ pt.getUserNo() +"', datetime('now', 'localtime'), '" +
-                pt.getPlanlist()[0] + "','" + pt.getPlanlist()[1] + "','" + pt.getPlanlist()[2] + "','" + pt.getPlanlist()[3] +
-                "',"+ pt.getFlaglist()[0] + "," + pt.getFlaglist()[1] + "," + pt.getFlaglist()[2] + "," + pt.getFlaglist()[3] +");" );*/
+
+        /*
         //CHECK THIS IS UPDATE...
         String todaytime = selectedDate;
         Cursor cursor = db.rawQuery("SELECT * from plans WHERE date(timestamp) = date('"+todaytime+"');", null);
@@ -109,11 +75,11 @@ public class DbHelper extends SQLiteOpenHelper {
         for(int i = 1 ; i < 4 ; i ++){
             for(int j = 1 ; j < 4 ; j ++){
                 if(i == j && (pt.getPlanlist()[i] != null)){
-                    db.execSQL("UPDATE plans SET "+ plansPlanCols[i] +"='"+pt.getPlanlist()[i]+"', "+plansFlagCols[j]+"= "+ pt.getFlaglist()[j]
-                            + " WHERE date(timestamp) = (date('"+todaytime+"')) AND userNo ="+pt.getUserNo()+";" );
+                    //db.execSQL("UPDATE plans SET "+ plansPlanCols[i] +"='"+pt.getPlanlist()[i]+"', "+plansFlagCols[j]+"= "+ pt.getFlaglist()[j]
+                           // + " WHERE date(timestamp) = (date('"+todaytime+"')) AND userNo ="+pt.getUserNo()+";" );
                 }
             }
-        }
+        }*/
     }
 
     //돈 추가 - 입금
@@ -160,11 +126,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-    //전체 리스트 반환 (순서는 가입 순)
-    public Cursor getRankList(SQLiteDatabase db){
-        Cursor cursor = db.rawQuery("SELECT * FROM users;", null);
-        return cursor;
-    }
 
     //plan list 반환
     public Cursor getPlanlist(SQLiteDatabase db, int userNo, String todayTime){

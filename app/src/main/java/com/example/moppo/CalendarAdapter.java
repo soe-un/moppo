@@ -97,11 +97,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
                         //입력 내용 가져오기
                         String plan = editTextPlan.getText().toString();
-                        String order = editTextOrder.getText().toString();
+                        int order = Integer.parseInt(editTextOrder.getText().toString());
 
-                        int intOrder = Integer.parseInt(order);
                         //우선순위 1부터 가능
-                        if(intOrder<1){
+                        if(order<1){
                             Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -116,7 +115,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         intIncome = intIncome / 1000 * 1000;
                          */
 
-                        switch (intOrder) {
+                        switch (order) {
                             case 1:
                                 intIncome = 100000;
                                 break;
@@ -136,10 +135,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
                         //플랜 변경
                         DailyPlan planItem;
-                        if(intOrder > possibleOrder ) {
-                            planItem = new DailyPlan(plan, false, order, "일정이 늘면 업데이트");
+                        if(order > possibleOrder ) {
+                            planItem = new DailyPlan(plan, false, order, -1);
                         } else{
-                            planItem = new DailyPlan(plan, false, order, Integer.toString(intIncome));
+                            planItem = new DailyPlan(plan, false, order, intIncome);
                         }
                         dailyPlans.set(holder.getAdapterPosition(), planItem);
 
@@ -182,25 +181,25 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                 //삭제될 때마다 기존 수입들도 바꾸기
                 for(int i=0; i<dailyPlans.size(); i++) {
                     DailyPlan currentItem = dailyPlans.get(i);
-                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+                    int currentOrder = currentItem.getOrder();
 
                     if(currentOrder > dailyPlans.size()) {
-                        String currentIncome = "일정이 늘면 업데이트";
+                        int currentIncome = -1;
                         currentItem.setIncome(currentIncome);
                     }
                     else {
                         switch (currentOrder) {
                             case 1:
-                                currentItem.setIncome("100000");
+                                currentItem.setIncome(100000);
                                 break;
                             case 2:
-                                currentItem.setIncome("800000");
+                                currentItem.setIncome(80000);
                                 break;
                             case 3:
-                                currentItem.setIncome("500000");
+                                currentItem.setIncome(50000);
                                 break;
                             case 4:
-                                currentItem.setIncome("250000");
+                                currentItem.setIncome(25000);
                                 break;
                             //default:
                             //    Toast.makeText(v.getContext(), "4가 최대입니다.", Toast.LENGTH_SHORT).show();
