@@ -20,7 +20,7 @@ import java.util.Calendar;
 
 public class FragmentStatistic extends Fragment{
 
-    GetTodayActivity in=new GetTodayActivity(getContext());
+    GetTodayStatistic in;
     Calendar cal = Calendar.getInstance();
     int month = cal.get(cal.MONTH) + 1;
     int date = cal.get(cal.DATE);
@@ -29,6 +29,7 @@ public class FragmentStatistic extends Fragment{
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date){
+
         for(int i = 0 ; i < 5 ; i ++) {
             daylist[i]=in.getAchievement(month,date-4+i);
         }
@@ -36,7 +37,6 @@ public class FragmentStatistic extends Fragment{
             float val=daylist[i];
             values.add(new Entry(i+1,val));
         }
-
 
         //setGraph(values);
 
@@ -51,6 +51,7 @@ public class FragmentStatistic extends Fragment{
         set1=new LineDataSet(values,"최근 5일 달성률");
 
         ArrayList<ILineDataSet> dataSets=new ArrayList<>();
+
         dataSets.add(set1);//data값 집어 넣음
 
         LineData data=new LineData(dataSets);
@@ -62,12 +63,18 @@ public class FragmentStatistic extends Fragment{
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+
         return inflater.inflate(R.layout.fragment_statistic,container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        values.clear();
+
+        in=new GetTodayStatistic(getContext());
+
         Get5days(month,date);
         setGraph(view,values);
 

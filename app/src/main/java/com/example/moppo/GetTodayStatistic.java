@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ComponentActivity;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import java.io.BufferedInputStream;
@@ -12,17 +15,29 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class GetTodayActivity {
+public class GetTodayStatistic {
     //오늘 날짜 가져오기
     //Calendar cal = Calendar.getInstance();
     //int month = cal.get(cal.MONTH) + 1;
     //int date = cal.get(cal.DATE);
     public static Context context_main;
 
-    public int result = 10;
+    DbHelper helper;
+    SQLiteDatabase db;
 
-    public GetTodayActivity(Context context){
+    public int result = 0;
+
+    public GetTodayStatistic(Context context){
         this.context_main = context;
+
+        helper = new DbHelper(context);
+
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
+
     }
 
     public void readToday(int month, int date) { //파일 읽어오기
@@ -99,8 +114,22 @@ public class GetTodayActivity {
 
     }
 
+    public void readToday(String selectedDate){
+        Cursor c = helper.readLocalDBPlanlist(db, selectedDate);
+
+        while (c.moveToNext()){
+            int tmpflag = c.getInt(c.getColumnIndex("is_complete"));
+            int tmporder = c.getInt(c.getColumnIndex("plan_order"));
+
+            result += (tmpflag)*(5-tmporder);
+        }
+
+    }
+
     public int getAchievement(int m,int d) {//읽어온 파일의 달성률 반환 함수
-        readToday(m, d);
+        //readToday(m, d);
+        String selDate = String.format("2021-%02d-%02d", m , d);
+        readToday(selDate);
         System.out.println(result);
         return result * 10;
     }
