@@ -149,9 +149,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         //플랜 변경
                         DailyPlan planItem;
                         if(order > possibleOrder ) {
-                            planItem = new DailyPlan(plan, false, order, -1, dailyPlan.getLocalIdx());
+                            planItem = new DailyPlan(plan, 0, order, -1, dailyPlan.getLocalIdx());
                         } else{
-                            planItem = new DailyPlan(plan, false, order, intIncome, dailyPlan.getLocalIdx());
+                            planItem = new DailyPlan(plan, 0, order, intIncome, dailyPlan.getLocalIdx());
                         }
                         helper.updateLocalDB(db, planItem);
                         System.out.println(planItem.getLocalIdx());
@@ -233,13 +233,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
         //먼저 체크박스 리스너 초기화
         holder.cb.setOnCheckedChangeListener(null);
         //getter로 체크 상태를 가져오고 setter로 이 값을 아이템 안의 체크박스에 set
-        holder.cb.setChecked(dailyPlan.getSelected());
+        holder.cb.setChecked(dailyPlan.getSelected()==1 ? true : false);
         //체크 상태를 알기 위해 리스너 부착
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //여기 dailyPlan이 final 키워드를 붙인 모델 클래스의 객체와 동일
-                dailyPlan.setSelected(isChecked);
+                dailyPlan.setSelected(isChecked?1:0);
                 helper.updateLocalDB(db, dailyPlan);
             }
         });

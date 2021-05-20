@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -88,8 +90,8 @@ public class DailyActivity extends AppCompatActivity {
         totalIncome.setText("총 수입: " + realIncome);
     }
 
-    public JSONArray goToServer(Cursor cursor) throws JSONException {
-        cursor = helper.goToServerToInsert(db);
+    public JSONArray goToServer(Cursor cursor) {
+
         JSONArray plansTables = new JSONArray();
 
         while (cursor.moveToNext()){
@@ -97,7 +99,7 @@ public class DailyActivity extends AppCompatActivity {
             String plan_name = cursor.getString(cursor.getColumnIndex("plan_name"));
             int plan_order = cursor.getInt(cursor.getColumnIndex("plan_order"));
             int income = cursor.getInt(cursor.getColumnIndex("income"));
-            boolean is_complete = cursor.getInt(cursor.getColumnIndex("is_complete")) == 1? true : false;
+            int is_complete = cursor.getInt(cursor.getColumnIndex("is_complete"));
             String timestamp = cursor.getString(cursor.getColumnIndex("timestamp"));
 
             PlansTable tmp = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
@@ -105,6 +107,7 @@ public class DailyActivity extends AppCompatActivity {
                 String jsonPaln = tmp.toString();
                 JSONObject jsonObject = new JSONObject(jsonPaln);
                 plansTables.put(jsonObject);
+                helper.reflectionServer(db, cursor.getInt(cursor.getColumnIndex("idx")));
             }catch (JSONException e){
                 e.printStackTrace();
             }
@@ -123,18 +126,40 @@ public class DailyActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        
-        try {
-            //insert record
-            JSONArray insertPlans = goToServer(helper.goToServerToInsert(db));
-            //update record
-            JSONArray updatePlans = goToServer(helper.goToServerToUpdate(db));
-            //delete record
-            JSONArray deletePlans = goToServer(helper.goToServerToDelete(db));
 
-        } catch (JSONException e) {
+        JSONArray json = new JSONArray();
+        //insert record
+        JSONArray insertPlans = goToServer(helper.goToServerToInsert(db));
+        //update record
+        JSONArray updatePlans = goToServer(helper.goToServerToUpdate(db));
+        //delete record
+        JSONArray deletePlans = goToServer(helper.goToServerToDelete(db));
+        //USER
+        JSONArray user = new JSONArray();
+        try {
+            JSONObject jsonObject = new JSONObject("{\"userNo\":\""+ID_idx+"\"}");
+            user.put(jsonObject);
+        }catch (JSONException e){
             e.printStackTrace();
         }
+
+        json.put(insertPlans);
+        json.put(updatePlans);
+        json.put(deletePlans);
+        json.put(user);
+
+        System.out.println(json.toString());
+
+        Response.Listener<JSONArray> responseListener;
+        responseListener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                System.out.println(response.toString());
+            }
+        };
+        ServerTable serverTable = new ServerTable(responseListener, json);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(serverTable);
 
 
     }
@@ -197,9 +222,9 @@ public class DailyActivity extends AppCompatActivity {
                 //플랜 추가 .. &이거 다시 생각해보기
                 DailyPlan planItem;
                 if (intOrder > possibleOrder) {
-                    planItem = new DailyPlan(plan, false, intOrder, -1, -1);
+                    planItem = new DailyPlan(plan, 0, intOrder, -1, -1);
                 } else {
-                    planItem = new DailyPlan(plan, false, intOrder, intIncome, -1);
+                    planItem = new DailyPlan(plan, 0, intOrder, intIncome, -1);
                 }
                 PlansTable pt = planItem.toPlansTable(-1, selectedDate);
                 helper.putLocalDB(db, pt, 1);
@@ -399,13 +424,12 @@ public class DailyActivity extends AppCompatActivity {
 
     private void read() { //DB 읽어오기
 
-
         Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
 
         while (cursor.moveToNext()){
             String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
             int localidx = cursor.getInt(cursor.getColumnIndex("idx"));
-            boolean isSelected = cursor.getInt(cursor.getColumnIndex("is_complete")) == 1? true : false;
+            int isSelected = cursor.getInt(cursor.getColumnIndex("is_complete"));
             int order = cursor.getInt(cursor.getColumnIndex("plan_order"));
             int income = cursor.getInt(cursor.getColumnIndex("income"));
 

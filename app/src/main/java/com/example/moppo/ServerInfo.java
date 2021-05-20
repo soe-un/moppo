@@ -6,7 +6,7 @@ public class ServerInfo {
     final static private String registerURL = "http://"+IPaddress+"/register.php";
     final static private String rankingURL = "http://"+IPaddress+"/ranking.php";
     final static private String planlistingURL = "http://"+IPaddress+"/planlisting.php";
-    final static private String planupdatingURL = "http://"+IPaddress+"/planUpdating.php.php";
+    final static private String planupdatingURL = "http://"+IPaddress+"/planUpdating.php";
 
     public static String getIPaddress() {
         return IPaddress;

@@ -6,10 +6,10 @@ public class PlansTable {
     String plan_name;
     int plan_order;
     int income;
-    boolean is_complete;
+    int is_complete;
     String timestamp;
 
-    public PlansTable(int server_idx, String plan_name, int plan_order, int income, boolean is_complete, String timestamp) {
+    public PlansTable(int server_idx, String plan_name, int plan_order, int income, int is_complete, String timestamp) {
         this.server_idx = server_idx;
         this.plan_name = plan_name;
         this.plan_order = plan_order;
@@ -62,11 +62,11 @@ public class PlansTable {
         this.income = income;
     }
 
-    public boolean getIs_complete() {
+    public int getIs_complete() {
         return is_complete;
     }
 
-    public void setIs_complete(boolean is_complete) {
+    public void setIs_complete(int is_complete) {
         this.is_complete = is_complete;
     }
 

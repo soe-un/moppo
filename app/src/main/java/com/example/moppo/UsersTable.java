@@ -4,6 +4,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -18,17 +19,17 @@ public class UsersTable extends StringRequest {
     final static private String plURL = si.getPlanlistingURL();
     final static private String puURL = si.getPlanupdatingURL();
     private Map<String, String> map;
-    private Map<String, ArrayList<JSONObject>> servermap;
+    private Map<String, JSONArray> servermap;
 
     public UsersTable (Response.Listener<String> listener){ //To Ranking
         super(Method.POST, raURL, listener, null);
     }
 
-    public UsersTable (Response.Listener<String> listener, ArrayList<JSONObject> insterts, ArrayList<JSONObject> updates, ArrayList<JSONObject> deletes){
+    public UsersTable (Response.Listener<String> listener, JSONArray inserts, JSONArray updates, JSONArray deletes){
         super(Method.POST, puURL, listener, null);
 
-        servermap = new HashMap<String, ArrayList<JSONObject>>();
-        servermap.put("insert_list", insterts);
+        servermap = new HashMap<String, JSONArray>();
+        servermap.put("insert_list", inserts);
         servermap.put("update_list", updates);
         servermap.put("delete_list", deletes);
     }

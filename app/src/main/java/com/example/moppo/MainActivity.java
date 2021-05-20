@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         String plan_name = tmpjsonobj.getString("plan_name");
                         int plan_order = tmpjsonobj.getInt("plan_order");
                         int income = tmpjsonobj.getInt("income");
-                        boolean is_complete = tmpjsonobj.getBoolean("is_complete");
+                        int is_complete = tmpjsonobj.getInt("is_complete");
                         String timestamp = tmpjsonobj.getString("timestamp");
 
                         PlansTable plansTable = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);

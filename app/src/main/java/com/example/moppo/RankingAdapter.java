@@ -1,6 +1,7 @@
 package com.example.moppo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,9 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
         public TextView getNickname(){
             return nickname;
         }
+        public Button getSupport() {
+            return support;
+        }
     }
 
     @NonNull
@@ -52,6 +56,14 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
     @Override
     public void onBindViewHolder(@NonNull RankingAdapter.CustomViewHolder holder, int position) {//데이터를 뷰홀더에 바인딩
         holder.getNickname().setText(users.get(position).getNick());
+
+        holder.support.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, SupportActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
