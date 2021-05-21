@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     static String userID;
     static int idx;
+    static String userNick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         userID = getIntent().getStringExtra("userID");
         idx = getIntent().getIntExtra("idx", 0);
+        userNick = getIntent().getStringExtra("nickname");
 
         getPlansfromServer(); //Server DB -> Local DB
 
@@ -84,8 +86,10 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("userID", userID);
         bundle.putInt("idx", idx);
+        bundle.putString("nickname", userNick);
 
         fragmentCalendar.setArguments(bundle);
+        fragmentStatistic.setArguments(bundle);
     }
 
     private void BottomNavigate(int id){

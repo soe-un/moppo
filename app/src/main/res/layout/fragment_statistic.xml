@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/static_text"
+        android:id="@+id/statistic_text"
         android:layout_width="135dp"
         android:layout_height="25dp"
         app:layout_constraintBottom_toTopOf="@+id/linechart"

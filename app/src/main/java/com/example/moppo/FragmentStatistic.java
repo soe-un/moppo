@@ -28,6 +28,9 @@ public class FragmentStatistic extends Fragment{
     int []daylist = new int[5];
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
     TextView user;
+    static String userID;
+    static int idx;
+    static String userNick;
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date){
@@ -66,6 +69,11 @@ public class FragmentStatistic extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
+        Bundle bundle = getArguments();
+        userID = bundle.getString("userID");
+        idx = bundle.getInt("idx");
+        userNick = bundle.getString("nickname");
+
         return inflater.inflate(R.layout.fragment_statistic,container, false);
     }
 
@@ -73,7 +81,8 @@ public class FragmentStatistic extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        user = view.findViewById(R.id.static_text);
+        user = view.findViewById(R.id.statistic_text);
+        user.setText(userNick);
 
         values.clear();
 

@@ -61,6 +61,8 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, SupportActivity.class);
+                int useridx = users.get(position).getIdx();
+                intent.putExtra("idx", useridx);
                 mContext.startActivity(intent);
             }
         });
