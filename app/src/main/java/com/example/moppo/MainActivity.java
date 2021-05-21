@@ -123,6 +123,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("life", "onResume Main");
+        getPlansfromServer(); //local db 갱신
+    }
+
     private void getPlansfromServer() { //DB 읽어오기
 
         Response.Listener<String> responseListener;

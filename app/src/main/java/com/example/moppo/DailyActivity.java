@@ -102,12 +102,13 @@ public class DailyActivity extends AppCompatActivity {
             int is_complete = cursor.getInt(cursor.getColumnIndex("is_complete"));
             String timestamp = cursor.getString(cursor.getColumnIndex("timestamp"));
 
+
             PlansTable tmp = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
             try {
                 String jsonPaln = tmp.toString();
                 JSONObject jsonObject = new JSONObject(jsonPaln);
                 plansTables.put(jsonObject);
-                helper.reflectionServer(db, cursor.getInt(cursor.getColumnIndex("idx")));
+                //helper.reflectionServer(db, cursor.getInt(cursor.getColumnIndex("idx")));
             }catch (JSONException e){
                 e.printStackTrace();
             }
@@ -124,9 +125,9 @@ public class DailyActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop(){
-        super.onStop();
-
+    protected void onPause() {
+        super.onPause();
+        Log.d("life", "pause Daily");
         JSONArray json = new JSONArray();
         //insert record
         JSONArray insertPlans = goToServer(helper.goToServerToInsert(db));
@@ -137,9 +138,9 @@ public class DailyActivity extends AppCompatActivity {
         //USER
         JSONArray user = new JSONArray();
         try {
-            JSONObject jsonObject = new JSONObject("{\"userNo\":\""+ID_idx+"\"}");
+            JSONObject jsonObject = new JSONObject("{\"userNo\":\"" + ID_idx + "\"}");
             user.put(jsonObject);
-        }catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ public class FragmentStatistic extends Fragment{
     int date = cal.get(cal.DATE);
     int []daylist = new int[5];
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
+    TextView user;
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date){
@@ -70,6 +72,8 @@ public class FragmentStatistic extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        user = view.findViewById(R.id.static_text);
 
         values.clear();
 

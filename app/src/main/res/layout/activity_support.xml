@@ -6,4 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".SupportActivity">
 
+    <FrameLayout
+        android:id="@+id/frameLayout2"
+        android:layout_width="375dp"
+        android:layout_height="585dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.58">
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/support_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="후원하기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
