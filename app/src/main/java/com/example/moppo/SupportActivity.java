@@ -39,6 +39,8 @@ public class SupportActivity extends AppCompatActivity {
         }
 
         useridx = getIntent().getIntExtra("idx", 0);
+        //이거로 서버에서 정보를 얻어와서 fragment statistic에 뿌릴 것.
+        //editText, button, fragment만 넣으면 될 듯!
 
     }
 

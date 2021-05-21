@@ -120,7 +120,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.option:
-                //옵션 누르면 할 것
+                Intent intent = new Intent(this, SubActivity.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("idx",idx);
+                intent.putExtra("nickname", userNick);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

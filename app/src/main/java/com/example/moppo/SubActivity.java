@@ -14,7 +14,7 @@ import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 public class SubActivity extends AppCompatActivity {
 
-    private String strNick, strProfileImg, strEmail;
+    private String strNick, strID, stridx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +22,9 @@ public class SubActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sub);
 
         Intent intent=getIntent();
-        strNick=intent.getStringExtra("name");
-        strEmail=intent.getStringExtra("email");
-        strProfileImg=intent.getStringExtra("profileImg");
+        strID=intent.getStringExtra("userID");
+        stridx = String.valueOf(intent.getIntExtra("idx", 0));
+        strNick=intent.getStringExtra("nickname");
 
         TextView tv_nick=findViewById(R.id.tv_ninkname);
         TextView rv_email=findViewById(R.id.tv_email);
@@ -33,9 +33,11 @@ public class SubActivity extends AppCompatActivity {
         //닉네임 set
         tv_nick.setText(strNick);
         //이메일 set
-        rv_email.setText(strEmail);
+        //rv_email.setText(strEmail);
 
-        Glide.with(this).load(strProfileImg).into(iv_profile);
+        //Glide.with(this).load(strProfileImg).into(iv_profile);
+
+
         findViewById(R.id.btn_logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +46,9 @@ public class SubActivity extends AppCompatActivity {
                     public void onCompleteLogout()
                     {
                         //로그아웃 성공시 수행하는 지점
-                        finish();//현재 Activity 종료
+                        Intent intent2 = new Intent(SubActivity.this, LoginActivity.class);
+                        startActivity(intent2);
+                        //Login 화면으로 이동.
                     }
                 });
             }
