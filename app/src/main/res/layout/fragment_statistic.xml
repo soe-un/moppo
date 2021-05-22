@@ -4,21 +4,51 @@
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/linechart"
-        android:layout_width="341dp"
-        android:layout_height="459dp"
-        android:layout_marginTop="160dp"
+        android:layout_width="320dp"
+        android:layout_height="386dp"
+        android:layout_marginTop="232dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/statistic_text"
-        android:layout_width="135dp"
-        android:layout_height="25dp"
+        android:layout_width="152dp"
+        android:layout_height="39dp"
         app:layout_constraintBottom_toTopOf="@+id/linechart"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.762" />
+        app:layout_constraintVertical_bias="0.336" />
+
+    <TextView
+        android:id="@+id/by_support_money"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:hint="후원 금액"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.24" />
+
+    <TextView
+        android:id="@+id/just_text"
+        android:layout_width="138dp"
+        android:layout_height="33dp"
+        android:autoText="true"
+        android:fontFamily="monospace"
+        android:fontsize="20dp"
+        android:freezesText="true"
+        android:text="원을 후원받았어요!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/by_support_money"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.247" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,9 +2,11 @@ package com.example.moppo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.EditText;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,8 +25,6 @@ public class SupportActivity extends AppCompatActivity {
 
     static int useridx;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +38,21 @@ public class SupportActivity extends AppCompatActivity {
             db = helper.getReadableDatabase();
         }
 
-        useridx = getIntent().getIntExtra("idx", 0);
+        useridx = getIntent().getIntExtra("idx", 0);//액티비티로부터 알고싶은 useridx를 알아냄
+
+        //Cursor cs=db.rawQuery("select * from PlansTable where idx='useridx'",null);//useridx에 해당하는 데이터 가져옴
+
+        //int planorder=cs.getInt(1);//우선순위 정보
+        //int iscompleted=cs.getInt(3);//했는지 안했는지 정보 0,1
+
+        //통계 프래그먼트 화면
+        FragmentStatistic fragment=new FragmentStatistic();
+        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout2,fragment).commit();
+
+        //후원 금액 text
+        EditText support_money=(EditText)findViewById(R.id.support_money);
+
+
         //이거로 서버에서 정보를 얻어와서 fragment statistic에 뿌릴 것.
         //editText, button, fragment만 넣으면 될 듯!
 

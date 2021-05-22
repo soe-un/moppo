@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     DbHelper helper;
     SQLiteDatabase db;
 
+    public static Context context_main;
     static String userID;
     static int idx;
     static String userNick;

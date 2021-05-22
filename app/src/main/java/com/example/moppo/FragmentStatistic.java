@@ -18,6 +18,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import com.example.moppo.MainActivity;
 
 public class FragmentStatistic extends Fragment{
 
@@ -65,7 +66,6 @@ public class FragmentStatistic extends Fragment{
     }
 
 
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
@@ -82,7 +82,7 @@ public class FragmentStatistic extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         user = view.findViewById(R.id.statistic_text);
-        user.setText(userNick);
+        user.setText(userNick);//user 닉네임 설정
 
         values.clear();
 
