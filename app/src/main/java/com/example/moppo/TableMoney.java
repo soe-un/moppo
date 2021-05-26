@@ -1,6 +1,6 @@
 package com.example.moppo;
 
-public class MoneyTable {
+public class TableMoney {
     //money: idx, userNo, timestamp, typeFlag, typeMoney, typeNo
     //------------주체-------------------------------------상대
     //-------------------------------typeFlag 0: 입금, flag 1: 출금
@@ -13,12 +13,12 @@ public class MoneyTable {
     int typeMoney;
     int typeNo;
 
-    public MoneyTable(){
+    public TableMoney(){
 
     }
 
     //case: PLAN, realIncome
-    public MoneyTable(int id, int typeMoney) {
+    public TableMoney(int id, int typeMoney) {
         this.userNo = id;
         this.typeMoney = typeMoney;
         int typeFlag = 0;

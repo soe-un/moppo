@@ -1,6 +1,6 @@
 package com.example.moppo;
 
-public class PlansTable {
+public class TablePlans {
 
     int server_idx;
     String plan_name;
@@ -9,7 +9,7 @@ public class PlansTable {
     int is_complete;
     String timestamp;
 
-    public PlansTable(int server_idx, String plan_name, int plan_order, int income, int is_complete, String timestamp) {
+    public TablePlans(int server_idx, String plan_name, int plan_order, int income, int is_complete, String timestamp) {
         this.server_idx = server_idx;
         this.plan_name = plan_name;
         this.plan_order = plan_order;

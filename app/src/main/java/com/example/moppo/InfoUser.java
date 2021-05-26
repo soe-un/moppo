@@ -2,19 +2,21 @@ package com.example.moppo;
 
 import java.util.ArrayList;
 
-public class UserInfo {
+public class InfoUser {
     private String nick;
+    private String userID;
     private int idx;
     private int totalMoney;
-    public UserInfo(String nick) {
+    public InfoUser(String nick) {
         this.nick = nick;
     }
 
 
-    public UserInfo(String nick, int idx, int totalMoney) {
+    public InfoUser(String nick, int idx, int totalMoney, String userID) {
         this.nick = nick;
         this.idx = idx;
         this.totalMoney = totalMoney;
+        this.userID = userID;
     }
 
     public String getNick() {
@@ -39,5 +41,13 @@ public class UserInfo {
 
     public void setTotalMoney(int totalMoney) {
         this.totalMoney = totalMoney;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

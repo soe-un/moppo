@@ -2,7 +2,6 @@ package com.example.moppo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -16,14 +15,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class SupportActivity extends AppCompatActivity {
 
     DbHelper helper;
     SQLiteDatabase db;
 
     static int useridx;
+    static String userNick;
+    static String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +38,14 @@ public class SupportActivity extends AppCompatActivity {
         }
 
         useridx = getIntent().getIntExtra("idx", 0);//액티비티로부터 알고싶은 useridx를 알아냄
+        userID = getIntent().getStringExtra("userID");
+        userNick = getIntent().getStringExtra("nickname");
+
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", userID);
+        bundle.putInt("idx", useridx);
+        bundle.putString("nickname", userNick);
+
 
         //Cursor cs=db.rawQuery("select * from PlansTable where idx='useridx'",null);//useridx에 해당하는 데이터 가져옴
 
@@ -47,6 +54,9 @@ public class SupportActivity extends AppCompatActivity {
 
         //통계 프래그먼트 화면
         FragmentStatistic fragment=new FragmentStatistic();
+
+        fragment.setArguments(bundle);
+
         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout2,fragment).commit();
 
         //후원 금액 text
@@ -79,8 +89,8 @@ public class SupportActivity extends AppCompatActivity {
                         int is_complete = tmpjsonobj.getInt("is_complete");
                         String timestamp = tmpjsonobj.getString("timestamp");
 
-                        PlansTable plansTable = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, plansTable, 0);
+                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+                        helper.putLocalDB(db, tablePlans, 0);
 
                     }
                 } catch (JSONException e) {
@@ -89,9 +99,9 @@ public class SupportActivity extends AppCompatActivity {
 
             }
         };
-        UsersTable usersTable = new UsersTable(responseListener, String.valueOf(useridx));
+        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(useridx));
         RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(usersTable);
+        queue.add(tableUsers);
 
     }
 }

@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.kakao.usermgmt.response.model.User;
+import com.example.moppo.calendar.DailyPlan;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moppo.db";
@@ -37,7 +37,7 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void putLocalDB(SQLiteDatabase db, PlansTable pt, int isLocal){
+    public void putLocalDB(SQLiteDatabase db, TablePlans pt, int isLocal){
 
         String q = String.format("INSERT INTO plans (idx, server_idx, plan_name, plan_order, income, is_complete, timestamp, is_updated)"+
                 "VALUES (null, %d, '%s', %d, %d, %d, date('%s'), %d);", pt.getServer_idx(), pt.getPlan_name(),

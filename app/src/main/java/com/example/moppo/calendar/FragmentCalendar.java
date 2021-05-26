@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.calendar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.moppo.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -20,8 +21,8 @@ import java.util.Calendar;
 public class FragmentCalendar extends Fragment implements OnDateSelectedListener{
     MaterialCalendarView cal;
     final TodayDecorator todayDecorator = new TodayDecorator();
-    static String userID;
-    static int idx;
+    String userID;
+    int idx;
 
 
     @Nullable

@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.calendar;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,20 +21,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.moppo.DbHelper;
+import com.example.moppo.TablePlans;
+import com.example.moppo.R;
+import com.example.moppo.TableServer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class DailyActivity extends AppCompatActivity {
@@ -103,7 +99,7 @@ public class DailyActivity extends AppCompatActivity {
             String timestamp = cursor.getString(cursor.getColumnIndex("timestamp"));
 
 
-            PlansTable tmp = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+            TablePlans tmp = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
             try {
                 String jsonPaln = tmp.toString();
                 JSONObject jsonObject = new JSONObject(jsonPaln);
@@ -158,9 +154,9 @@ public class DailyActivity extends AppCompatActivity {
                 System.out.println(response.toString());
             }
         };
-        ServerTable serverTable = new ServerTable(responseListener, json);
+        TableServer tableServer = new TableServer(responseListener, json);
         RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(serverTable);
+        queue.add(tableServer);
 
 
     }
@@ -227,7 +223,7 @@ public class DailyActivity extends AppCompatActivity {
                 } else {
                     planItem = new DailyPlan(plan, 0, intOrder, intIncome, -1);
                 }
-                PlansTable pt = planItem.toPlansTable(-1, selectedDate);
+                TablePlans pt = planItem.toPlansTable(-1, selectedDate);
                 helper.putLocalDB(db, pt, 1);
                 Cursor cursor = helper.readRecentRecord(db);
                 if(cursor.moveToNext()){

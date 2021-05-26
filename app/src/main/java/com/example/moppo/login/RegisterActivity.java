@@ -1,12 +1,7 @@
-package com.example.moppo;
+package com.example.moppo.login;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.moppo.R;
+import com.example.moppo.TableUsers;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,21 +19,13 @@ import org.json.JSONObject;
 public class RegisterActivity extends AppCompatActivity {
 
 
-    DbHelper helper;
-    SQLiteDatabase db;
     private EditText et_id, et_pass, et_name, et_nick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        helper = new DbHelper(this);
 
-        try{ //get database
-            db = helper.getWritableDatabase();
-        }catch (SQLException ex){
-            db = helper.getReadableDatabase();
-        }
         et_id           = (EditText) findViewById(R.id.et_id);
         et_pass         = (EditText) findViewById(R.id.et_pass);
         et_name         = (EditText) findViewById(R.id.et_name);
@@ -88,9 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
             };
-            UsersTable usersTable = new UsersTable(responseListener, id, pwd, name, nickname);
+            TableUsers tableUsers = new TableUsers(responseListener, id, pwd, name, nickname);
             RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
-            queue.add(usersTable);
+            queue.add(tableUsers);
         }
     }
 }
