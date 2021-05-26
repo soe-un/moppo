@@ -81,8 +81,6 @@ public class FragmentRanking extends Fragment {
                         String userID = tmpjsonobj.getString("userID");
                         int inMoney = tmpjsonobj.getInt("inmoney");
 
-                        System.out.println("inMoney "+inMoney);
-
                         InfoUser ui = new InfoUser(nickname, idx, totalMoney, userID, inMoney);
                         mUserList.add(ui);
 

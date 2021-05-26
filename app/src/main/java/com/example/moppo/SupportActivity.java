@@ -36,12 +36,6 @@ public class SupportActivity extends AppCompatActivity {
     int inMoney;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        getPlansfromServer();//userid에 해당하는 plan을 local db에 불러오기
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_support);
@@ -60,16 +54,13 @@ public class SupportActivity extends AppCompatActivity {
         userNo = getIntent().getIntExtra("userNo", 0);
         inMoney = getIntent().getIntExtra("inMoney", 0);
 
-        System.out.println(inMoney);
-
-
-
         Bundle bundle = new Bundle();
         bundle.putString("userID", userID);
         bundle.putInt("idx", useridx);
         bundle.putString("nickname", userNick);
         bundle.putInt("inMoney", inMoney);
 
+        //getPlansfromServer();
 
         //통계 프래그먼트 화면
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -88,7 +79,6 @@ public class SupportActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String typeMoney = support_money.getText().toString();
-
 
                 Response.Listener<String> responseListener;
                 responseListener = new Response.Listener<String>() {
@@ -118,45 +108,7 @@ public class SupportActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
 
-
-
-    private void getPlansfromServer() { //원하는 idx의 DB 읽어오기
-
-        Response.Listener<String> responseListener;
-        responseListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    helper.cleanLocalDB(db);
-
-                    for(int i = 0 ; i<jsonArray.length() ; i++){
-                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
-
-                        int server_idx = tmpjsonobj.getInt("server_idx");
-                        String plan_name = tmpjsonobj.getString("plan_name");
-                        int plan_order = tmpjsonobj.getInt("plan_order");
-                        int income = tmpjsonobj.getInt("income");
-                        int is_complete = tmpjsonobj.getInt("is_complete");
-                        String timestamp = tmpjsonobj.getString("timestamp");
-
-                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, tablePlans, 0);
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        };
-        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(useridx));
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(tableUsers);
-
-    }
 }

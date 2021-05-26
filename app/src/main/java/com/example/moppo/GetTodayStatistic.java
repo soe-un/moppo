@@ -9,7 +9,14 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.example.moppo.DbHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -27,10 +34,13 @@ public class GetTodayStatistic {
     DbHelper helper;
     SQLiteDatabase db;
 
+    int idx;
+
     public int result = 0;
 
-    public GetTodayStatistic(Context context){
+    public GetTodayStatistic(Context context, int idx){
         this.context = context;
+        this.idx = idx;
 
         helper = new DbHelper(context);
 
@@ -39,7 +49,6 @@ public class GetTodayStatistic {
         }catch (SQLException ex){
             db = helper.getReadableDatabase();
         }
-
     }
 
     public void readToday(int month, int date) { //파일 읽어오기
@@ -117,6 +126,7 @@ public class GetTodayStatistic {
     }
 
     public void readToday(String selectedDate){
+
         String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
         Cursor c = db.rawQuery(q, null);
 
@@ -130,9 +140,47 @@ public class GetTodayStatistic {
 
     }
 
+    private void getPlansfromServer() { //원하는 idx의 DB 읽어오기
+
+        Response.Listener<String> responseListener;
+        responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    helper.cleanLocalDB(db);
+
+                    for(int i = 0 ; i<jsonArray.length() ; i++){
+                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
+
+                        int server_idx = tmpjsonobj.getInt("server_idx");
+                        String plan_name = tmpjsonobj.getString("plan_name");
+                        int plan_order = tmpjsonobj.getInt("plan_order");
+                        int income = tmpjsonobj.getInt("income");
+                        int is_complete = tmpjsonobj.getInt("is_complete");
+                        String timestamp = tmpjsonobj.getString("timestamp");
+
+                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+                        helper.putLocalDB(db, tablePlans, 0);
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx));
+        RequestQueue queue = Volley.newRequestQueue(context);
+        queue.add(tableUsers);
+
+    }
+
     public int getAchievement(int m,int d) {//읽어온 파일의 달성률 반환 함수
         //readToday(m, d);
         String selDate = String.format("2021-%02d-%02d", m , d);
+        getPlansfromServer();
         readToday(selDate);
         System.out.println(result);
 

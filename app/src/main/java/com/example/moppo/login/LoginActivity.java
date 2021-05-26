@@ -101,11 +101,13 @@ public class LoginActivity extends AppCompatActivity {
 
                                     int userIdx = jsonObject.getInt("useridx");
                                     String userNick = jsonObject.getString("nickname");
+                                    int inmoney = jsonObject.getInt("inmoney");
 
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.putExtra("userID", userID);
                                     intent.putExtra("idx", userIdx);
                                     intent.putExtra("nickname", userNick);
+                                    intent.putExtra("inmoney", inmoney);
                                     startActivity(intent);
                                 } else {
                                     Toast.makeText(getApplicationContext(), "로그인 실패, 아이디 및 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
