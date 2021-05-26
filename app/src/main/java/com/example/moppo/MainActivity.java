@@ -35,10 +35,11 @@ public class MainActivity extends AppCompatActivity {
     DbHelper helper;
     SQLiteDatabase db;
 
-    public static Context context_main;
-    static String userID;
-    static int idx;
-    static String userNick;
+    public Context context_main;
+    String userID;
+    int idx;
+    String userNick;
+    int inMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         userID = getIntent().getStringExtra("userID");
         idx = getIntent().getIntExtra("idx", 0);
         userNick = getIntent().getStringExtra("nickname");
+        inMoney = getIntent().getIntExtra("inMoney", 0);
 
         getPlansfromServer(); //Server DB -> Local DB
 
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("userID", userID);
         bundle.putInt("idx", idx);
         bundle.putString("nickname", userNick);
+        bundle.putInt("inMoney", inMoney);
 
         fragmentRanking.setArguments(bundle);
         fragmentCalendar.setArguments(bundle);
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction.replace(R.id.frameLayout, fragmentCalendar).commitAllowingStateLoss();
                 break;
             case R.id.statistic:
-                transaction.replace(R.id.frameLayout, fragmentStatistic).commitAllowingStateLoss();
+                transaction.replace(R.id.frameLayout, fragmentStatistic).commit();
                 break;
             case R.id.ranking:
                 transaction.replace(R.id.frameLayout, fragmentRanking).commitAllowingStateLoss();

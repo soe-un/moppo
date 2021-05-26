@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -91,11 +92,11 @@ public class FragmentStatistic extends Fragment{
         chart= view.findViewById(R.id.linechart);
 
         values.clear();
-        System.out.println(values.toString());
 
-        GetTodayStatistic in=new GetTodayStatistic(getActivity());
+        GetTodayStatistic in=new GetTodayStatistic(getActivity(), idx);
         Get5days(month,date, in);
         setGraph(values);
+
 
     }
 
