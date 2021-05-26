@@ -5,14 +5,12 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UsersTable extends StringRequest {
-    final static private ServerInfo si = new ServerInfo();
+public class TableUsers extends StringRequest {
+    final static private InfoServer si = new InfoServer();
     final static private String loURL = si.getLoginURL();
     final static private String reURL = si.getRegisterURL();
     final static private String raURL = si.getRankingURL();
@@ -21,11 +19,11 @@ public class UsersTable extends StringRequest {
     private Map<String, String> map;
     private Map<String, JSONArray> servermap;
 
-    public UsersTable (Response.Listener<String> listener){ //To Ranking
+    public TableUsers(Response.Listener<String> listener){ //To Ranking
         super(Method.POST, raURL, listener, null);
     }
 
-    public UsersTable (Response.Listener<String> listener, JSONArray inserts, JSONArray updates, JSONArray deletes){
+    public TableUsers(Response.Listener<String> listener, JSONArray inserts, JSONArray updates, JSONArray deletes){
         super(Method.POST, puURL, listener, null);
 
         servermap = new HashMap<String, JSONArray>();
@@ -34,14 +32,14 @@ public class UsersTable extends StringRequest {
         servermap.put("delete_list", deletes);
     }
 
-    public UsersTable (Response.Listener<String> listener, String userNo){ //To Plan listing
+    public TableUsers(Response.Listener<String> listener, String userNo){ //To Plan listing
         super(Method.POST, plURL, listener, null);
 
         map = new HashMap<>();
         map.put("userNo", userNo);
     }
 
-    public UsersTable (Response.Listener<String> listener, String userID, String userPwd){ //To Login
+    public TableUsers(Response.Listener<String> listener, String userID, String userPwd){ //To Login
         super(Method.POST, loURL, listener, null);
 
         map = new HashMap<>();
@@ -49,7 +47,7 @@ public class UsersTable extends StringRequest {
         map.put("userPwd", userPwd);
     }
 
-    public UsersTable (Response.Listener<String> listener, String ... params){ //To Register
+    public TableUsers(Response.Listener<String> listener, String ... params){ //To Register
         super(Method.POST, reURL, listener, null);
 
         map = new HashMap<>();

@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.login;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +20,11 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.moppo.DbHelper;
+import com.example.moppo.MainActivity;
+import com.example.moppo.R;
+import com.example.moppo.TableUsers;
 import com.kakao.auth.ISessionCallback;
-import com.kakao.auth.KakaoSDK;
 import com.kakao.auth.Session;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
@@ -96,7 +99,6 @@ public class LoginActivity extends AppCompatActivity {
                                 if (success) {
                                     Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
 
-                                    String userID = jsonObject.getString("userID");
                                     int userIdx = jsonObject.getInt("useridx");
                                     String userNick = jsonObject.getString("nickname");
 
@@ -114,9 +116,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    UsersTable usersTable = new UsersTable(responseListener, userID, userPwd);
+                    TableUsers tableUsers = new TableUsers(responseListener, userID, userPwd);
                     RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-                    queue.add(usersTable);
+                    queue.add(tableUsers);
 
 
 

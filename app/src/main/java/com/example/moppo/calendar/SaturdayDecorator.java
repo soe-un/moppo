@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.calendar;
 
 import android.graphics.Color;
 import android.text.style.ForegroundColorSpan;
@@ -9,22 +9,22 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 
 import java.util.Calendar;
 
-public class SundayDecorator implements DayViewDecorator {
+public class SaturdayDecorator implements DayViewDecorator {
 
     private final Calendar calendar = Calendar.getInstance();
 
-    public SundayDecorator() {
+    public SaturdayDecorator() {
     }
 
     @Override
     public boolean shouldDecorate(CalendarDay day) {
         day.copyTo(calendar);
         int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
-        return weekDay == Calendar.SUNDAY;
+        return weekDay == Calendar.SATURDAY;
     }
 
     @Override
     public void decorate(DayViewFacade view) {
-        view.addSpan(new ForegroundColorSpan(Color.RED));
+        view.addSpan(new ForegroundColorSpan(Color.BLUE));
     }
 }

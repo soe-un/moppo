@@ -2,41 +2,28 @@ package com.example.moppo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.moppo.calendar.FragmentCalendar;
+import com.example.moppo.ranking.FragmentRanking;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.kakao.auth.ISessionCallback;
-import com.kakao.auth.Session;
-import com.kakao.network.ErrorResult;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.MeV2ResponseCallback;
-import com.kakao.usermgmt.response.MeV2Response;
-import com.kakao.util.exception.KakaoException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNV;
@@ -90,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putInt("idx", idx);
         bundle.putString("nickname", userNick);
 
+        fragmentRanking.setArguments(bundle);
         fragmentCalendar.setArguments(bundle);
         fragmentStatistic.setArguments(bundle);
     }
@@ -161,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
                         int is_complete = tmpjsonobj.getInt("is_complete");
                         String timestamp = tmpjsonobj.getString("timestamp");
 
-                        PlansTable plansTable = new PlansTable(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, plansTable, 0);
+                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+                        helper.putLocalDB(db, tablePlans, 0);
 
                     }
                 } catch (JSONException e) {
@@ -171,9 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-        UsersTable usersTable = new UsersTable(responseListener, String.valueOf(idx));
+        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx));
         RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(usersTable);
+        queue.add(tableUsers);
 
     }
 }

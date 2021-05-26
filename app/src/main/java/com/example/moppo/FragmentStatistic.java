@@ -29,9 +29,9 @@ public class FragmentStatistic extends Fragment{
     int []daylist = new int[5];
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
     TextView user;
-    static String userID;
-    static int idx;
-    static String userNick;
+    String userID;
+    int idx;
+    String userNick;
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date){

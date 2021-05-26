@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Moppo"
         android:usesCleartextTraffic="true">
         <activity android:name=".SupportActivity"></activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,9 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"></activity>
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".login.RegisterActivity" />
         <activity android:name=".SubActivity" />
-        <activity android:name=".DailyActivity" />
+        <activity android:name=".calendar.DailyActivity" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"

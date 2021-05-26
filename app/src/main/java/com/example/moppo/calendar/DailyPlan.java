@@ -1,4 +1,6 @@
-package com.example.moppo;
+package com.example.moppo.calendar;
+
+import com.example.moppo.TablePlans;
 
 public class DailyPlan {
     private String plan; //일정
@@ -47,8 +49,8 @@ public class DailyPlan {
         this.localIdx = localIdx;
     }
 
-    public PlansTable toPlansTable(int server_idx, String timestamp){
-        PlansTable pt = new PlansTable(server_idx, plan, order, income, isSelected, timestamp);
+    public TablePlans toPlansTable(int server_idx, String timestamp){
+        TablePlans pt = new TablePlans(server_idx, plan, order, income, isSelected, timestamp);
         return pt;
     }
 

@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.ranking;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,14 +12,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.moppo.R;
+import com.example.moppo.SupportActivity;
+import com.example.moppo.InfoUser;
+
 import java.util.ArrayList;
 
 public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomViewHolder>{
 
-    private ArrayList<UserInfo> users;
+    private ArrayList<InfoUser> users;
     private Context mContext;
 
-    public RankingAdapter(Context context, ArrayList<UserInfo> users) { //constructor
+    public RankingAdapter(Context context, ArrayList<InfoUser> users) { //constructor
         this.mContext = context;
         this.users = users;
     }
@@ -62,7 +66,11 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, SupportActivity.class);
                 int useridx = users.get(position).getIdx();
+                String userID = users.get(position).getUserID();
+                String nickname = users.get(position).getNick();
                 intent.putExtra("idx", useridx);
+                intent.putExtra("userID", userID);
+                intent.putExtra("nickname", nickname);
                 mContext.startActivity(intent);
             }
         });

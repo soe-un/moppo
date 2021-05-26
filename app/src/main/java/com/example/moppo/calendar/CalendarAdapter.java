@@ -1,4 +1,4 @@
-package com.example.moppo;
+package com.example.moppo.calendar;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -18,6 +18,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.moppo.DbHelper;
+import com.example.moppo.R;
 
 import java.util.ArrayList;
 

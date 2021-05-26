@@ -41,7 +41,6 @@
         android:layout_height="33dp"
         android:autoText="true"
         android:fontFamily="monospace"
-        android:fontsize="20dp"
         android:freezesText="true"
         android:text="원을 후원받았어요!"
         app:layout_constraintBottom_toBottomOf="parent"
