@@ -54,12 +54,6 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(q);
     }
 
-    public void reflectionServer(SQLiteDatabase db, int idx){
-        String q = String.format("UPDATE plans SET is_updated = 3 WHERE idx = %d", idx);
-
-        db.execSQL(q);
-    }
-
     public void deleteLocalDB(SQLiteDatabase db, int idx){
         String q = String.format("UPDATE plans SET is_updated = 2 WHERE idx = %d", idx);
 

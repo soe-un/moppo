@@ -7,16 +7,18 @@ public class InfoUser {
     private String userID;
     private int idx;
     private int totalMoney;
+    private int inMoney;
     public InfoUser(String nick) {
         this.nick = nick;
     }
 
 
-    public InfoUser(String nick, int idx, int totalMoney, String userID) {
+    public InfoUser(String nick, int idx, int totalMoney, String userID, int inMoney) {
         this.nick = nick;
         this.idx = idx;
         this.totalMoney = totalMoney;
         this.userID = userID;
+        this.inMoney = inMoney;
     }
 
     public String getNick() {
@@ -41,6 +43,14 @@ public class InfoUser {
 
     public void setTotalMoney(int totalMoney) {
         this.totalMoney = totalMoney;
+    }
+
+    public int getInMoney() {
+        return inMoney;
+    }
+
+    public void setInMoney(int inMoney) {
+        this.inMoney = inMoney;
     }
 
     public String getUserID() {

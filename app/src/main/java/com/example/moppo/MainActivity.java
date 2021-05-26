@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.d("life", "onResume Main");
         getPlansfromServer(); //local db 갱신
+        Log.d("life", "server database read");
     }
 
     private void getPlansfromServer() { //DB 읽어오기
