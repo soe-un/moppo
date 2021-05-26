@@ -1,5 +1,6 @@
 package com.example.moppo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,20 +23,22 @@ import com.example.moppo.MainActivity;
 
 public class FragmentStatistic extends Fragment{
 
-    GetTodayStatistic in;
     Calendar cal = Calendar.getInstance();
     int month = cal.get(cal.MONTH) + 1;
     int date = cal.get(cal.DATE);
-    int []daylist = new int[5];
+    int []daylist;
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
-    TextView user;
+    LineChart chart;
+
+    TextView user, money;
     String userID;
     int idx;
     String userNick;
+    int inMoney;
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
-    public void Get5days(int month,int date){
-
+    public void Get5days(int month,int date, GetTodayStatistic in){
+        daylist = new int[5];
         for(int i = 0 ; i < 5 ; i ++) {
             daylist[i]=in.getAchievement(month,date-4+i);
         }
@@ -48,10 +51,7 @@ public class FragmentStatistic extends Fragment{
 
     }
     //그래프 설정
-    public void setGraph(View view, ArrayList<Entry> values){
-        LineChart chart;
-
-        chart= view.findViewById(R.id.linechart);
+    public void setGraph(ArrayList<Entry> values){
 
         LineDataSet set1;
         set1=new LineDataSet(values,"최근 5일 달성률");
@@ -73,6 +73,7 @@ public class FragmentStatistic extends Fragment{
         userID = bundle.getString("userID");
         idx = bundle.getInt("idx");
         userNick = bundle.getString("nickname");
+        inMoney = bundle.getInt("inMoney");
 
         return inflater.inflate(R.layout.fragment_statistic,container, false);
     }
@@ -84,12 +85,18 @@ public class FragmentStatistic extends Fragment{
         user = view.findViewById(R.id.statistic_text);
         user.setText(userNick);//user 닉네임 설정
 
+        money = view.findViewById(R.id.by_support_money);
+        money.setText(String.valueOf(inMoney));
+
+        chart= view.findViewById(R.id.linechart);
+
         values.clear();
+        System.out.println(values.toString());
 
-        in=new GetTodayStatistic(getContext());
-
-        Get5days(month,date);
-        setGraph(view,values);
+        GetTodayStatistic in=new GetTodayStatistic(getActivity());
+        Get5days(month,date, in);
+        setGraph(values);
 
     }
+
 }

@@ -7,6 +7,7 @@ public class InfoServer {
     final static private String rankingURL = "http://"+IPaddress+"/ranking.php";
     final static private String planlistingURL = "http://"+IPaddress+"/planlisting.php";
     final static private String planupdatingURL = "http://"+IPaddress+"/planUpdating.php";
+    final static private String doitURL = "http://"+IPaddress+"/doit.php";
 
     public static String getIPaddress() {
         return IPaddress;
@@ -25,4 +26,6 @@ public class InfoServer {
     public static String getPlanlistingURL() { return planlistingURL; }
 
     public static String getPlanupdatingURL() { return planupdatingURL; }
+
+    public static String getDoitURL() { return doitURL; }
 }

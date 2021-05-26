@@ -1,11 +1,17 @@
 package com.example.moppo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -17,12 +23,23 @@ import org.json.JSONObject;
 
 public class SupportActivity extends AppCompatActivity {
 
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private FragmentStatistic fragmentStatistic;
+
     DbHelper helper;
     SQLiteDatabase db;
 
-    static int useridx;
-    static String userNick;
-    static String userID;
+    int useridx;
+    String userNick;
+    String userID;
+    int userNo;
+    int inMoney;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getPlansfromServer();//userid에 해당하는 plan을 local db에 불러오기
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,36 +57,74 @@ public class SupportActivity extends AppCompatActivity {
         useridx = getIntent().getIntExtra("idx", 0);//액티비티로부터 알고싶은 useridx를 알아냄
         userID = getIntent().getStringExtra("userID");
         userNick = getIntent().getStringExtra("nickname");
+        userNo = getIntent().getIntExtra("userNo", 0);
+        inMoney = getIntent().getIntExtra("inMoney", 0);
+
+        System.out.println(inMoney);
+
+
 
         Bundle bundle = new Bundle();
         bundle.putString("userID", userID);
         bundle.putInt("idx", useridx);
         bundle.putString("nickname", userNick);
+        bundle.putInt("inMoney", inMoney);
 
-
-        //Cursor cs=db.rawQuery("select * from PlansTable where idx='useridx'",null);//useridx에 해당하는 데이터 가져옴
-
-        //int planorder=cs.getInt(1);//우선순위 정보
-        //int iscompleted=cs.getInt(3);//했는지 안했는지 정보 0,1
 
         //통계 프래그먼트 화면
-        FragmentStatistic fragment=new FragmentStatistic();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        fragmentStatistic = new FragmentStatistic();
+        transaction.add(R.id.frameLayout2, fragmentStatistic).commit();
 
-        fragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout2,fragment).commit();
+        fragmentStatistic.setArguments(bundle);
 
         //후원 금액 text
         EditText support_money=(EditText)findViewById(R.id.support_money);
 
+        Button supbtn = findViewById(R.id.support_btn);
 
-        //이거로 서버에서 정보를 얻어와서 fragment statistic에 뿌릴 것.
-        //editText, button, fragment만 넣으면 될 듯!
+        supbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String typeMoney = support_money.getText().toString();
+
+
+                Response.Listener<String> responseListener;
+                responseListener = new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            boolean success = jsonObject.getBoolean("success");
+                            System.out.println(success);
+                            String message = jsonObject.getString("message");
+
+                            if (success) {
+                                Toast.makeText(SupportActivity.this, "후원 성공!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SupportActivity.this, "후원 실패(금액 초과)" + message, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                };
+                TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(userNo),typeMoney, String.valueOf(useridx));
+                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+                queue.add(tableUsers);
+            }
+        });
+
 
     }
 
 
-    private void getPlansfromServer() { //DB 읽어오기
+
+
+    private void getPlansfromServer() { //원하는 idx의 DB 읽어오기
 
         Response.Listener<String> responseListener;
         responseListener = new Response.Listener<String>() {

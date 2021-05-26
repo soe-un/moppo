@@ -60,6 +60,8 @@ public class FragmentRanking extends Fragment {
 
         //전체 유저 목록 가져오기
         mUserList.clear();
+        mAdapter = new RankingAdapter(getActivity(), mUserList, idx);
+        mRecyclerView.setAdapter(mAdapter);
 
         Response.Listener<String> responseListener;
         responseListener = new Response.Listener<String>() {
@@ -77,14 +79,15 @@ public class FragmentRanking extends Fragment {
                         int idx = tmpjsonobj.getInt("idx");
                         int totalMoney = tmpjsonobj.getInt("totalMoney");
                         String userID = tmpjsonobj.getString("userID");
+                        int inMoney = tmpjsonobj.getInt("inmoney");
 
-                        InfoUser ui = new InfoUser(nickname, idx, totalMoney, userID);
+                        System.out.println("inMoney "+inMoney);
+
+                        InfoUser ui = new InfoUser(nickname, idx, totalMoney, userID, inMoney);
                         mUserList.add(ui);
 
                     }
-                    mAdapter = new RankingAdapter(getActivity(), mUserList);
-                    mRecyclerView.setAdapter(mAdapter);
-
+                    mAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -94,7 +97,6 @@ public class FragmentRanking extends Fragment {
         TableUsers tableUsers = new TableUsers(responseListener);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         queue.add(tableUsers);
-
 
     }
 

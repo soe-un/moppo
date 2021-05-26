@@ -22,7 +22,7 @@ public class GetTodayStatistic {
     //Calendar cal = Calendar.getInstance();
     //int month = cal.get(cal.MONTH) + 1;
     //int date = cal.get(cal.DATE);
-    public static Context context_main;
+    public Context context;
 
     DbHelper helper;
     SQLiteDatabase db;
@@ -30,7 +30,7 @@ public class GetTodayStatistic {
     public int result = 0;
 
     public GetTodayStatistic(Context context){
-        this.context_main = context;
+        this.context = context;
 
         helper = new DbHelper(context);
 
@@ -58,7 +58,7 @@ public class GetTodayStatistic {
         System.out.println("fileName"+fileName);
 
         try {
-            fis = context_main.openFileInput(fileName);
+            fis = context.openFileInput(fileName);
             bis = new BufferedInputStream(fis);
             dis = new DataInputStream(bis);
             //1순위 자료
@@ -117,14 +117,16 @@ public class GetTodayStatistic {
     }
 
     public void readToday(String selectedDate){
-        Cursor c = helper.readLocalDBPlanlist(db, selectedDate);
+        String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
+        Cursor c = db.rawQuery(q, null);
 
         while (c.moveToNext()){
             int tmpflag = c.getInt(c.getColumnIndex("is_complete"));
             int tmporder = c.getInt(c.getColumnIndex("plan_order"));
-
+            System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
             result += (tmpflag)*(5-tmporder);
         }
+        c.close();
 
     }
 
@@ -133,6 +135,8 @@ public class GetTodayStatistic {
         String selDate = String.format("2021-%02d-%02d", m , d);
         readToday(selDate);
         System.out.println(result);
+
         return result * 10;
     }
+
 }

@@ -3,7 +3,7 @@ package com.example.moppo;
 public class TableMoney {
     //money: idx, userNo, timestamp, typeFlag, typeMoney, typeNo
     //------------주체-------------------------------------상대
-    //-------------------------------typeFlag 0: 입금, flag 1: 출금
+    //-------------------------------typeFlag 1: 입금, flag 0: 출금
     //ref--FOREIGN KEY (userNo) REFERENCES users(idx),
     //-----FOREIGN KEY (typeNo) REFERENCES users(idx)
 
