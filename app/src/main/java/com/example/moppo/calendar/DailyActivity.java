@@ -199,15 +199,6 @@ public class DailyActivity extends AppCompatActivity {
                 planItem = new DailyPlan(plan, 0, intOrder, 0, -1);
                 mPlanList.add(planItem);
 
-                //지금은 추가하면 바로 저장인데 저장버튼 누르면 저장으로 바꾸기
-                /*TablePlans pt = planItem.toPlansTable(-1, selectedDate);
-                helper.putLocalDB(db, pt, 1);
-                Cursor cursor = helper.readRecentRecord(db);
-                if (cursor.moveToNext()) {
-                    planItem.setLocalIdx(cursor.getInt(cursor.getColumnIndex("idx")));
-                }
-                mPlanList.add(planItem);*/
-
                 //어댑터에게 알리기
                 mAdapter.notifyDataSetChanged(); //업데이트
                 dialog.dismiss();
@@ -250,13 +241,15 @@ public class DailyActivity extends AppCompatActivity {
 
         TextView totalIncome = (TextView) findViewById(R.id.total_income);
 
+        //*오류 체크들 토스트 안뜸 !!
         if (IsRepeat()) { //우선순위 중복이면 저장 x
             Toast.makeText(DailyActivity.this, "우선순위 중복으로 저장에 실패했습니다.", Toast.LENGTH_LONG).show();
             return;
         }
 
         if (!IsRight()) { //우선순위가 일정 수보다 크면 저장 x
-            Toast.makeText(DailyActivity.this, "우선순위가 일정의 수를 넘어\n저장에 실패했습니다.", Toast.LENGTH_LONG).show();
+            Toast.makeText(v.getContext(), "우선순위가 일정의 수를 넘어\n저장에 실패했습니다.", Toast.LENGTH_LONG).show();
+            Log.d("daily", "isright");
             return;
         }
 
@@ -275,13 +268,18 @@ public class DailyActivity extends AppCompatActivity {
             item.setIncome(income);
 
             //총수입
-            if (item.getSelected() == 1)
+            if (item.getSelected() == 1) {
                 realIncome += item.getIncome();
-            //PlansTable pt = new PlansTable(server_idx, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
+            }
+
+            //없는 요소일 경우 local db에 put
+            if(item.getLocalIdx() == -1) {
+                TablePlans pt = new TablePlans(-1, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
+                helper.putLocalDB(db, pt, 1);
+            }else{ //있는 요소일 경우 update
+                helper.updateLocalDB(db, item); //local db에 업데이트
+            }
         }
-        //PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
-        //System.out.println(plansTable);
-        //helper.insertPlan(db, plansTable, selectedDate);
 
         mAdapter.notifyDataSetChanged();
         totalIncome.setText("총 수입: " + realIncome);

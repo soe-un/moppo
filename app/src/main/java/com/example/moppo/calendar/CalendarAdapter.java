@@ -136,14 +136,12 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         DailyPlan planItem;
                         //우선순위가 변경
                         if (pre_order != intOrder)
-                            planItem = new DailyPlan(plan, 0, intOrder, 0, dailyPlan.getLocalIdx());
+                            planItem = new DailyPlan(plan, 0, intOrder, 0, dailyPlans.get(holder.getAdapterPosition()).getLocalIdx());
                         //일정명이 변경 -> 우선순위는 그대로
                         else
-                            planItem = new DailyPlan(plan, 0, intOrder, pre_income, dailyPlan.getLocalIdx());
+                            planItem = new DailyPlan(plan, 0, intOrder, pre_income, dailyPlans.get(holder.getAdapterPosition()).getLocalIdx());
 
-                        //helper.updateLocalDB(db, planItem);
-                        //System.out.println(planItem.getLocalIdx());
-                        dailyPlans.set(holder.getAdapterPosition(), planItem);
+                        dailyPlans.set(holder.getAdapterPosition(), planItem); //list 업데이트
 
                         //업데이트
                         notifyItemChanged(holder.getAdapterPosition());
@@ -158,7 +156,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
         holder.remove_btn.setTag(position); // 몇번짼지 태그 달기
         holder.remove_btn.setOnClickListener(new View.OnClickListener() { // 리무브 버튼 누르면 그 아이템 삭제시키기
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //삭제 시 복구 불가
                 int removePosition = (int) v.getTag();
                 System.out.println(dailyPlans.get(removePosition).getLocalIdx());
                 helper.deleteLocalDB(db, dailyPlans.get(removePosition).getLocalIdx());
