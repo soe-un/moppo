@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -129,12 +130,24 @@ public class GetTodayStatistic {
 
         String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
         Cursor c = db.rawQuery(q, null);
+        int sum = 0; //우선순위 총합
+        for(int i=1; i <= c.getCount(); i++)
+            sum += sum;
+
+        //플랜이 저장 안 되어 있으면
+        if(sum == 0) {
+            Toast.makeText(context, "저장된 플랜이 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         while (c.moveToNext()){ //c.getCount() 가 전체 order 길이
             int tmpflag = c.getInt(c.getColumnIndex("is_complete"));
             int tmporder = c.getInt(c.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
-            result += (tmpflag)*(5-tmporder);
+            //result += (tmpflag)*(5-tmporder);
+            if(tmpflag == 1){
+                result += Math.round(((c.getCount() - (tmporder - 1)) / sum) * 100) / 100.0;
+            }
         }
         c.close();
 
@@ -184,7 +197,7 @@ public class GetTodayStatistic {
         readToday(selDate);
         System.out.println(result);
 
-        return result * 10;
+        return result * 100;
     }
 
     //cashback
@@ -195,19 +208,36 @@ public class GetTodayStatistic {
 
         int today_success = 0;
         int yesterday_success = 0;
+        int tc_sum = 0;
+        int yc_sum = 0;
+        for(int i=1;i<=tc.getCount();i++)
+            tc_sum += i;
+        for(int i=1;i<=yc.getCount();i++)
+            yc_sum += i;
 
-        while (tc.moveToNext()){ //c.getCount() 가 전체 order 길이
+
+        if(tc_sum == 0 || yc_sum == 0) {
+            return;
+        }
+
+        while (tc.moveToNext()){ //tc.getCount() 가 전체 order 길이
             int tmpflag = tc.getInt(tc.getColumnIndex("is_complete"));
             int tmporder = tc.getInt(tc.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
-            today_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+            //today_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+            if(tmpflag == 1){
+                today_success += Math.round(((tc.getCount()-(tmporder-1))/tc_sum)*100)/100.0;
+            }
         }
 
         while (yc.moveToNext()){ //c.getCount() 가 전체 order 길이
             int tmpflag = yc.getInt(tc.getColumnIndex("is_complete"));
             int tmporder = yc.getInt(tc.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
-            yesterday_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+            //yesterday_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+            if(tmpflag == 1){
+                yesterday_success += Math.round(((yc.getCount()-(tmporder-1))/yc_sum)*100)/100.0;
+            }
         }
 
         if(today_success > yesterday_success){

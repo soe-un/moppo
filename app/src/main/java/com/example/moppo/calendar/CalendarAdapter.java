@@ -79,7 +79,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
         holder.plan.setText(dailyPlan.getPlan());
         holder.order.setText("우선순위: " + dailyPlan.getOrder());
-        holder.income.setText("수입: " + dailyPlan.getIncome());
+        if (dailyPlan.getIncome() == 0) {
+            holder.income.setText("수입: 저장하세요.");
+        } else holder.income.setText("수입: " + dailyPlan.getIncome());
 
         //수정하기
         holder.edit_btn.setOnClickListener(new View.OnClickListener() {
@@ -101,8 +103,11 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
 
                 //입력되어 있던 데이터
-                editTextPlan.setText(dailyPlans.get(holder.getAdapterPosition()).getPlan());
-                editTextOrder.setText(String.valueOf(dailyPlans.get(holder.getAdapterPosition()).getOrder()));
+                String pre_plan = dailyPlans.get(holder.getAdapterPosition()).getPlan();
+                int pre_order = dailyPlans.get(holder.getAdapterPosition()).getOrder();
+                int pre_income = dailyPlans.get(holder.getAdapterPosition()).getIncome();
+                editTextPlan.setText(pre_plan);
+                editTextOrder.setText(String.valueOf(pre_order));
 
                 final AlertDialog dialog = builder.create();
 
@@ -114,64 +119,34 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         //입력 내용 가져오기
                         String plan = editTextPlan.getText().toString();
                         String order = editTextOrder.getText().toString();
+
+                        //빈 항목 체크
+                        if (plan.isEmpty()) {
+                            Toast.makeText(mContext, "일정을 입력하세요.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        if (order.isEmpty()) {
+                            Toast.makeText(mContext, "우선순위를 입력하세요.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
                         int intOrder = Integer.parseInt(order);
-
-                        //우선순위 1부터 가능
-                        if (intOrder < 1) {
-                            Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-
-                        //이 부분 오류 안 잡힘
-                        if (order.equals("")) {
-                            Toast.makeText(v.getContext(), "우선순위를 입력하세요.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        //우선순위에 따라 돈 구현하기
-                        int possibleOrder = dailyPlans.size();
-                        int intIncome = 0;
-
-                        intIncome = 100000 / possibleOrder * (possibleOrder - (intOrder - 1));
-                        //백의 자리부터 0
-                        intIncome = intIncome / 1000 * 1000;
-
-                        /*
-                        switch (order) {
-                            case 1:
-                                intIncome = 100000;
-                                break;
-                            case 2:
-                                intIncome = 80000;
-                                break;
-                            case 3:
-                                intIncome = 50000;
-                                break;
-                            case 4:
-                                intIncome = 25000;
-                                break;
-                            default:
-                                Toast.makeText(v.getContext(),"4가 최대입니다.", Toast.LENGTH_SHORT).show();
-                                return;
-                        }*/
 
                         //플랜 변경
                         DailyPlan planItem;
-                        if (intOrder > possibleOrder) {
-                            Toast.makeText(mContext, "우선순위를 1부터\n순서대로 입력하세요.", Toast.LENGTH_LONG).show();
-                            return;
-                            //planItem = new DailyPlan(plan, 0, intOrder, -1, dailyPlan.getLocalIdx());
-                        } else
-                            planItem = new DailyPlan(plan, 0, intOrder, intIncome, dailyPlan.getLocalIdx());
+                        //우선순위가 변경
+                        if (pre_order != intOrder)
+                            planItem = new DailyPlan(plan, 0, intOrder, 0, dailyPlan.getLocalIdx());
+                        //일정명이 변경 -> 우선순위는 그대로
+                        else
+                            planItem = new DailyPlan(plan, 0, intOrder, pre_income, dailyPlan.getLocalIdx());
 
-                        helper.updateLocalDB(db, planItem);
-                        System.out.println(planItem.getLocalIdx());
+                        //helper.updateLocalDB(db, planItem);
+                        //System.out.println(planItem.getLocalIdx());
                         dailyPlans.set(holder.getAdapterPosition(), planItem);
 
                         //업데이트
                         notifyItemChanged(holder.getAdapterPosition());
-
                         dialog.dismiss();
                     }
                 });
@@ -189,54 +164,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                 helper.deleteLocalDB(db, dailyPlans.get(removePosition).getLocalIdx());
                 dailyPlans.remove(removePosition); // 그 아이템 삭제
 
-
-                //삭제될 때마다 기존 수입들도 바꾸기
-                for (int i = 0; i < dailyPlans.size(); i++) {
-                    DailyPlan currentItem = dailyPlans.get(i);
-                    int currentOrder = currentItem.getOrder();
-
-                    if(currentOrder > dailyPlans.size()) {
-                        Toast.makeText(mContext, "일정이 늘면 수입이 \n 정상적으로 업데이트 됩니다.", Toast.LENGTH_LONG).show();
-                        currentItem.setIncome(0);
-                    }
-                    else {
-                    //1000단위로 구현하기
-                    int Order = 100000 / dailyPlans.size() * (dailyPlans.size() - (currentOrder - 1));
-                    Order = Order / 1000 * 1000;
-                    currentItem.setIncome(Order);
-                    }
-                }
-
-                /*
-                //삭제될 때마다 기존 수입들도 바꾸기
-                for(int i=0; i<dailyPlans.size(); i++) {
-                    DailyPlan currentItem = dailyPlans.get(i);
-                    int currentOrder = currentItem.getOrder();
-
-                    if(currentOrder > dailyPlans.size()) {
-                        int currentIncome = -1;
-                        currentItem.setIncome(currentIncome);
-                    }
-                    else {
-                        switch (currentOrder) {
-                            case 1:
-                                currentItem.setIncome(100000);
-                                break;
-                            case 2:
-                                currentItem.setIncome(80000);
-                                break;
-                            case 3:
-                                currentItem.setIncome(50000);
-                                break;
-                            case 4:
-                                currentItem.setIncome(25000);
-                                break;
-                            //default:
-                            //    Toast.makeText(v.getContext(), "4가 최대입니다.", Toast.LENGTH_SHORT).show();
-                            //    break;
-                        }
-                    }
-                }*/
+                for (DailyPlan item : dailyPlans)
+                    item.setIncome(0);
 
                 //업데이트
                 notifyDataSetChanged();
