@@ -182,6 +182,18 @@ public class DailyActivity extends AppCompatActivity {
                 String plan = editTextPlan.getText().toString();
                 String order = editTextOrder.getText().toString();
 
+                //빈 항목 체크
+                if (order.equals("")) {
+                    Toast.makeText(DailyActivity.this, "우선순위를 입력하세요.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(plan.equals("")){
+                    Toast.makeText(DailyActivity.this, "항목 이름을 입력하세요.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                //내용이 맞는지 체크
+
                 int intOrder = Integer.parseInt(order);
                 //우선순위 1부터 가능
                 if (intOrder < 1) {
@@ -189,21 +201,13 @@ public class DailyActivity extends AppCompatActivity {
                     return;
                 }
 
-                //이 오류 안 잡힘
-                if (order.equals("")) {
-                    Toast.makeText(DailyActivity.this, "우선순위를 입력하세요.", Toast.LENGTH_LONG).show();
-                    return;
-                }
                 //우선순위에 따라 돈 구현하기
                 int possibleOrder = mPlanList.size() + 1;
                 int intIncome = 0;
 
-
                 intIncome = 100000 / possibleOrder * (possibleOrder - (intOrder - 1));
                 //백의 자리부터 0
                 intIncome = intIncome / 1000 * 1000;
-
-
 
                 /*
                 switch (intOrder) {
@@ -382,8 +386,8 @@ public class DailyActivity extends AppCompatActivity {
         }
     }*/
 
-    //봉인.
-    public void store(View v) { //DB에 저장
+
+    public void store(View v) { // 저장 버튼 클릭
 
         realIncome = 0;
 

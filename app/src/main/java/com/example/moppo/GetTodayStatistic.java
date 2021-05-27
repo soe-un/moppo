@@ -130,7 +130,7 @@ public class GetTodayStatistic {
         String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
         Cursor c = db.rawQuery(q, null);
 
-        while (c.moveToNext()){
+        while (c.moveToNext()){ //c.getCount() 가 전체 order 길이
             int tmpflag = c.getInt(c.getColumnIndex("is_complete"));
             int tmporder = c.getInt(c.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
@@ -185,6 +185,38 @@ public class GetTodayStatistic {
         System.out.println(result);
 
         return result * 10;
+    }
+
+    //cashback
+    public void cashbackEvent(String today, String yesterday){ //사용자가 지정한 하루 시작 1분 전에 실행
+
+        Cursor tc = helper.readLocalDBPlanlist(db, today); //오늘의 목록
+        Cursor yc = helper.readLocalDBPlanlist(db, yesterday); //어제의 목록
+
+        int today_success = 0;
+        int yesterday_success = 0;
+
+        while (tc.moveToNext()){ //c.getCount() 가 전체 order 길이
+            int tmpflag = tc.getInt(tc.getColumnIndex("is_complete"));
+            int tmporder = tc.getInt(tc.getColumnIndex("plan_order"));
+            System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
+            today_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+        }
+
+        while (yc.moveToNext()){ //c.getCount() 가 전체 order 길이
+            int tmpflag = yc.getInt(tc.getColumnIndex("is_complete"));
+            int tmporder = yc.getInt(tc.getColumnIndex("plan_order"));
+            System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
+            yesterday_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+        }
+
+        if(today_success > yesterday_success){
+            //후원 금액 * 달성율 ....
+            //여기서 money 테이블로 돈을 쏴줍니다. 이게 성공되면 알람이 오면 될 것 같아요
+        }else{
+            return;
+        }
+
     }
 
 }
