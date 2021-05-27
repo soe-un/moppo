@@ -1,8 +1,10 @@
 package com.example.moppo.calendar;
 
+import android.database.DatabaseUtils;
+
 import com.example.moppo.TablePlans;
 
-public class DailyPlan {
+public class DailyPlan implements Comparable<DailyPlan>{
     private String plan; //일정
     private int isSelected;//일정을 완료했는지
     private int order; //우선순위
@@ -47,6 +49,14 @@ public class DailyPlan {
 
     public void setLocalIdx(int localIdx) {
         this.localIdx = localIdx;
+    }
+
+    @Override
+    public int compareTo(DailyPlan p) {
+        if(this.getOrder() > p.getOrder())
+            return 1;
+        else
+            return -1;
     }
 
     public TablePlans toPlansTable(int server_idx, String timestamp){

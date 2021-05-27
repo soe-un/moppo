@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DailyActivity extends AppCompatActivity {
 
@@ -72,9 +73,9 @@ public class DailyActivity extends AppCompatActivity {
 
         helper = new DbHelper(this);
 
-        try{ //get database
+        try { //get database
             db = helper.getWritableDatabase();
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             db = helper.getReadableDatabase();
         }
 
@@ -90,7 +91,7 @@ public class DailyActivity extends AppCompatActivity {
 
         JSONArray plansTables = new JSONArray();
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             int server_idx = cursor.getInt(cursor.getColumnIndex("server_idx"));
             String plan_name = cursor.getString(cursor.getColumnIndex("plan_name"));
             int plan_order = cursor.getInt(cursor.getColumnIndex("plan_order"));
@@ -105,15 +106,15 @@ public class DailyActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject(jsonPaln);
                 plansTables.put(jsonObject);
                 //helper.reflectionServer(db, cursor.getInt(cursor.getColumnIndex("idx")));
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        if(plansTables.length() == 0){
-            try{
+        if (plansTables.length() == 0) {
+            try {
                 JSONObject jsonObject = new JSONObject("{\"empty\":\"yes\"}");
                 plansTables.put(jsonObject);
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -184,20 +185,27 @@ public class DailyActivity extends AppCompatActivity {
                 int intOrder = Integer.parseInt(order);
                 //우선순위 1부터 가능
                 if (intOrder < 1) {
-                    Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_LONG).show();
                     return;
                 }
 
+                //이 오류 안 잡힘
+                if (order.equals("")) {
+                    Toast.makeText(DailyActivity.this, "우선순위를 입력하세요.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 //우선순위에 따라 돈 구현하기
                 int possibleOrder = mPlanList.size() + 1;
                 int intIncome = 0;
 
-                /*
+
                 intIncome = 100000 / possibleOrder * (possibleOrder - (intOrder - 1));
                 //백의 자리부터 0
                 intIncome = intIncome / 1000 * 1000;
-                */
 
+
+
+                /*
                 switch (intOrder) {
                     case 1:
                         intIncome = 100000;
@@ -215,39 +223,59 @@ public class DailyActivity extends AppCompatActivity {
                         Toast.makeText(DailyActivity.this, "4가 최대입니다.", Toast.LENGTH_SHORT).show();
                         return;
                 }
+                */
 
                 //플랜 추가 .. &이거 다시 생각해보기
+
                 DailyPlan planItem;
                 if (intOrder > possibleOrder) {
-                    planItem = new DailyPlan(plan, 0, intOrder, -1, -1);
+                    Toast.makeText(DailyActivity.this, "우선순위를 1부터\n순서대로 입력하세요.", Toast.LENGTH_LONG).show();
+                    return;
+                    //planItem = new DailyPlan(plan, 0, intOrder, -1, -1);
                 } else {
                     planItem = new DailyPlan(plan, 0, intOrder, intIncome, -1);
+                    int idx;
+                    int add = 0; //0이면 아직 add 안 한 거 1이면 한 거
+                    for (DailyPlan item : mPlanList) {
+                        if (item.getOrder() >= intOrder) {
+                            idx = mPlanList.indexOf(item);
+                            mPlanList.add(idx, planItem); //우선순위 더 큰 게 있으면 그 잎에 주가
+                            add = 1;
+                            break;
+                        }
+                    }
+                    if (add == 0)
+                        mPlanList.add(planItem); //우선순위 가장 크면 뒤에 추가
                 }
-                TablePlans pt = planItem.toPlansTable(-1, selectedDate);
+
+
+                //지금은 추가하면 바로 저장인데 저장버튼 누르면 저장으로 바꾸기
+                /*TablePlans pt = planItem.toPlansTable(-1, selectedDate);
                 helper.putLocalDB(db, pt, 1);
                 Cursor cursor = helper.readRecentRecord(db);
-                if(cursor.moveToNext()){
+                if (cursor.moveToNext()) {
                     planItem.setLocalIdx(cursor.getInt(cursor.getColumnIndex("idx")));
                 }
-                mPlanList.add(planItem);
+                mPlanList.add(planItem);*/
 
 
                 //추가될 때마다 기존 수입들도 바꾸기
-                /*for (int i = 0; i < mPlanList.size(); i++) {
+                for (int i = 0; i < mPlanList.size(); i++) {
                     DailyPlan currentItem = mPlanList.get(i);
-                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+                    int currentOrder = currentItem.getOrder();
 
-                    if (currentOrder > mPlanList.size()) {
+                   /* if (currentOrder > mPlanList.size()) {
                         String currentIncome = "일정이 늘면 업데이트";
-                        currentItem.setIncome(currentIncome);
-                    } else {
-                        //1000단위로 구현하기
-                        int Order = 100000 / mPlanList.size() * (mPlanList.size() - (currentOrder - 1));
-                        Order = Order / 1000 * 1000;
-                        currentItem.setIncome(Integer.toString(Order));
-                    }
-                }*/
+                        currentItem.setIncome(Integer.parseInt(currentIncome));
+                    } else {*/
+                    //1000단위로 구현하기
+                    int Order = 100000 / mPlanList.size() * (mPlanList.size() - (currentOrder - 1));
+                    Order = Order / 1000 * 1000;
+                    currentItem.setIncome(Order);
+                    //}
+                }
 
+                /*
                 //추가될 때마다 기존 수입들도 바꾸기
                 for (int i = 0; i < mPlanList.size(); i++) {
                     DailyPlan currentItem = mPlanList.get(i);
@@ -275,7 +303,7 @@ public class DailyActivity extends AppCompatActivity {
                             //    return;
                         }
                     }
-                }
+                }*/
 
                 //어댑터에게 알리기
                 mAdapter.notifyDataSetChanged(); //업데이트
@@ -298,9 +326,10 @@ public class DailyActivity extends AppCompatActivity {
     }
 
     private boolean IsRight() { //우선순위가 일정 수보다 크지 않은지
-        for (DailyPlan item : mPlanList)
-            if ( item.getOrder() > mPlanList.size() )
+        for (DailyPlan item : mPlanList) {
+            if (item.getOrder() > mPlanList.size())
                 return false;
+        }
         return true;
     }
 
@@ -370,13 +399,19 @@ public class DailyActivity extends AppCompatActivity {
             return;
         }
 
+        Collections.sort(mPlanList); // 우선순위 오름차순 정렬
+        mAdapter.notifyDataSetChanged();
+
         //빈 item 없는지 check 해주세요
         for (DailyPlan item : mPlanList) { //plan 추가
+            if (item.getSelected() == 1)
+                realIncome += item.getIncome();
             //PlansTable pt = new PlansTable(server_idx, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
         }
         //PlansTable plansTable = new PlansTable(idx, planlist, flaglist);
         //System.out.println(plansTable);
         //helper.insertPlan(db, plansTable, selectedDate);
+
 
         totalIncome.setText("총 수입: " + realIncome);
         Toast.makeText(DailyActivity.this, "총수입이 업데이트되었습니다.", Toast.LENGTH_SHORT).show();
@@ -423,12 +458,14 @@ public class DailyActivity extends AppCompatActivity {
 
         Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
             int localidx = cursor.getInt(cursor.getColumnIndex("idx"));
             int isSelected = cursor.getInt(cursor.getColumnIndex("is_complete"));
             int order = cursor.getInt(cursor.getColumnIndex("plan_order"));
             int income = cursor.getInt(cursor.getColumnIndex("income"));
+            if(isSelected == 1)
+                realIncome += income;
 
             DailyPlan dp = new DailyPlan(plan, isSelected, order, income, localidx);
             mPlanList.add(dp);

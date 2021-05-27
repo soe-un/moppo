@@ -37,7 +37,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
         this.dailyPlans = dailyPlans;
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder{ //item 불러오기
+    public class CustomViewHolder extends RecyclerView.ViewHolder { //item 불러오기
         TextView plan;
         TextView order;
         TextView income;
@@ -58,9 +58,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
             helper = new DbHelper(mContext.getApplicationContext());
 
-            try{ //get database
+            try { //get database
                 db = helper.getWritableDatabase();
-            }catch (SQLException ex){
+            } catch (SQLException ex) {
                 db = helper.getReadableDatabase();
             }
         }
@@ -69,7 +69,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
     @NonNull
     @Override
     public CalendarAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) { //뷰홀더 객체 생성
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false);
         return new CustomViewHolder(view);
     }
 
@@ -113,11 +113,19 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
 
                         //입력 내용 가져오기
                         String plan = editTextPlan.getText().toString();
-                        int order = Integer.parseInt(editTextOrder.getText().toString());
+                        String order = editTextOrder.getText().toString();
+                        int intOrder = Integer.parseInt(order);
 
                         //우선순위 1부터 가능
-                        if(order<1){
+                        if (intOrder < 1) {
                             Toast.makeText(v.getContext(), "우선순위는 1부터", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+
+                        //이 부분 오류 안 잡힘
+                        if (order.equals("")) {
+                            Toast.makeText(v.getContext(), "우선순위를 입력하세요.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -125,12 +133,11 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                         int possibleOrder = dailyPlans.size();
                         int intIncome = 0;
 
-                        /*
-                        intIncome = 100000/possibleOrder*(possibleOrder-(intOrder-1));
+                        intIncome = 100000 / possibleOrder * (possibleOrder - (intOrder - 1));
                         //백의 자리부터 0
                         intIncome = intIncome / 1000 * 1000;
-                         */
 
+                        /*
                         switch (order) {
                             case 1:
                                 intIncome = 100000;
@@ -147,18 +154,21 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                             default:
                                 Toast.makeText(v.getContext(),"4가 최대입니다.", Toast.LENGTH_SHORT).show();
                                 return;
-                        }
+                        }*/
 
                         //플랜 변경
                         DailyPlan planItem;
-                        if(order > possibleOrder ) {
-                            planItem = new DailyPlan(plan, 0, order, -1, dailyPlan.getLocalIdx());
-                        } else{
-                            planItem = new DailyPlan(plan, 0, order, intIncome, dailyPlan.getLocalIdx());
-                        }
+                        if (intOrder > possibleOrder) {
+                            Toast.makeText(mContext, "우선순위를 1부터\n순서대로 입력하세요.", Toast.LENGTH_LONG).show();
+                            return;
+                            //planItem = new DailyPlan(plan, 0, intOrder, -1, dailyPlan.getLocalIdx());
+                        } else
+                            planItem = new DailyPlan(plan, 0, intOrder, intIncome, dailyPlan.getLocalIdx());
+
                         helper.updateLocalDB(db, planItem);
                         System.out.println(planItem.getLocalIdx());
                         dailyPlans.set(holder.getAdapterPosition(), planItem);
+
                         //업데이트
                         notifyItemChanged(holder.getAdapterPosition());
 
@@ -180,24 +190,24 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                 dailyPlans.remove(removePosition); // 그 아이템 삭제
 
 
-                /*
                 //삭제될 때마다 기존 수입들도 바꾸기
-                for(int i=0; i<dailyPlans.size(); i++) {
+                for (int i = 0; i < dailyPlans.size(); i++) {
                     DailyPlan currentItem = dailyPlans.get(i);
-                    int currentOrder = Integer.parseInt(currentItem.getOrder());
+                    int currentOrder = currentItem.getOrder();
 
                     if(currentOrder > dailyPlans.size()) {
-                        String currentIncome = "일정이 늘면 업데이트";
-                        currentItem.setIncome(currentIncome);
+                        Toast.makeText(mContext, "일정이 늘면 수입이 \n 정상적으로 업데이트 됩니다.", Toast.LENGTH_LONG).show();
+                        currentItem.setIncome(0);
                     }
                     else {
-                        //백의 자리부터 0
-                        int Order = 100000 / dailyPlans.size() * (dailyPlans.size() - (currentOrder - 1));
-                        Order = Order / 1000 * 1000;
-                        currentItem.setIncome(Integer.toString(Order));
+                    //1000단위로 구현하기
+                    int Order = 100000 / dailyPlans.size() * (dailyPlans.size() - (currentOrder - 1));
+                    Order = Order / 1000 * 1000;
+                    currentItem.setIncome(Order);
                     }
-                }*/
+                }
 
+                /*
                 //삭제될 때마다 기존 수입들도 바꾸기
                 for(int i=0; i<dailyPlans.size(); i++) {
                     DailyPlan currentItem = dailyPlans.get(i);
@@ -226,7 +236,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
                             //    break;
                         }
                     }
-                }
+                }*/
 
                 //업데이트
                 notifyDataSetChanged();
@@ -236,13 +246,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Custom
         //먼저 체크박스 리스너 초기화
         holder.cb.setOnCheckedChangeListener(null);
         //getter로 체크 상태를 가져오고 setter로 이 값을 아이템 안의 체크박스에 set
-        holder.cb.setChecked(dailyPlan.getSelected()==1 ? true : false);
+        holder.cb.setChecked(dailyPlan.getSelected() == 1 ? true : false);
         //체크 상태를 알기 위해 리스너 부착
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //여기 dailyPlan이 final 키워드를 붙인 모델 클래스의 객체와 동일
-                dailyPlan.setSelected(isChecked?1:0);
+                dailyPlan.setSelected(isChecked ? 1 : 0);
                 helper.updateLocalDB(db, dailyPlan);
             }
         });
