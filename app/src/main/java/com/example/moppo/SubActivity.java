@@ -36,6 +36,15 @@ public class SubActivity extends AppCompatActivity {
         //rv_email.setText(strEmail);
 
         //Glide.with(this).load(strProfileImg).into(iv_profile);
+        findViewById(R.id.alarm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent3 = new Intent(SubActivity.this, AlarmActivity.class);
+                startActivity(intent3);
+                //알람 화면으로 이동.
+            }
+        });
+
 
 
         findViewById(R.id.btn_logout).setOnClickListener(new View.OnClickListener() {

@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AlarmActivity">
+
     <TimePicker
         android:id="@+id/timePicker"
-        android:layout_width="412dp"
-        android:layout_height="502dp"
+        android:layout_width="408dp"
+        android:layout_height="547dp"
         android:background="#FFFFFF"
-        android:headerBackground="@color/purple_200"
+        android:headerBackground="@color/main_color"
         android:timePickerMode="clock"
         app:layout_constraintBottom_toTopOf="@id/button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,15 +21,18 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="144dp"
-        android:layout_height="54dp"
-        app:backgroundTint="#AA9EE1"
+        android:layout_width="171dp"
+        android:layout_height="59dp"
+        android:text="등록"
+        app:backgroundTint="#D5CDF8"
+        app:backgroundTintMode="add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.791"
-        tools:text="알람 설정" />
+        app:layout_constraintVertical_bias="0.842"
+        tools:text="등록" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
