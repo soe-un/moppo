@@ -6,10 +6,10 @@
         android:id="@+id/linechart"
         android:layout_width="337dp"
         android:layout_height="413dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/by_support_money">
 
     </com.github.mikephil.charting.charts.LineChart>
 
@@ -17,54 +17,40 @@
         android:id="@+id/statistic_text"
         android:layout_width="152dp"
         android:layout_height="39dp"
-        app:layout_constraintBottom_toTopOf="@+id/linechart"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:textSize="8pt"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.082" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/by_support_money"
-        android:layout_width="63dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginLeft="120dp"
-        android:hint="후원 금액"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.157" />
-
-    <TextView
-        android:id="@+id/just_text"
-        android:layout_width="138dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="128dp"
-        android:layout_marginBottom="31dp"
-        android:autoText="true"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
         android:fontFamily="monospace"
-        android:freezesText="true"
-        android:text="원을 후원받았어요!"
-        app:layout_constraintBottom_toTopOf="@+id/linechart"
+        android:gravity="center"
+        android:hint="후원 금액"
+        android:textSize="8pt"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/by_support_money"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statistic_text" />
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="339dp"
         android:layout_height="29dp"
-        android:layout_marginTop="415dp"
-        android:layout_marginBottom="128dp"
-        android:text="4일 전         3일 전        2일 전        어제           오늘"
+        android:text="4일 전        3일 전        2일 전             어제             오늘"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.777"
+        app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linechart" />
+        app:layout_constraintTop_toBottomOf="@+id/linechart"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

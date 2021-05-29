@@ -104,13 +104,10 @@ public class FragmentStatistic extends Fragment{
         chart.setDescription(description);
         chart.invalidate();
 
-        //아래꺼 fragment가 context로 변환 X - > this에서 오류
         //marker 포인트 데이터 값 보여주기
-        //mymakerView marker = new mymakerView(this,R.layout.activity_my_maker_view);
-        //marker.setChartView(chart);
-        // chart.setMarker(marker);
-
-
+        mymakerView marker = new mymakerView(getContext(),R.layout.activity_my_maker_view);
+        marker.setChartView(chart);
+        chart.setMarker(marker);
     }
 
 
@@ -131,10 +128,10 @@ public class FragmentStatistic extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         user = view.findViewById(R.id.statistic_text);
-        user.setText(userNick);//user 닉네임 설정
+        user.setText("닉네임: " + userNick);//user 닉네임 설정
 
         money = view.findViewById(R.id.by_support_money);
-        money.setText(String.valueOf(inMoney));
+        money.setText(String.valueOf(inMoney)+"원을 후원받았어요!");
 
         chart= view.findViewById(R.id.linechart);
 
