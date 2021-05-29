@@ -13,8 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moppo"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AlarmActivity"></activity>
         <activity android:name=".SupportActivity" />
-        <activity android:name=".SplashActivity"
+        <activity
+            android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +29,14 @@
         <activity android:name=".login.RegisterActivity" />
         <activity android:name=".SubActivity" />
         <activity android:name=".calendar.DailyActivity" />
+
+        <receiver
+            android:name=".DeviceBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
