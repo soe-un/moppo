@@ -37,6 +37,7 @@ public class SubActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //알람 화면으로 이동.
                 Intent intent3 = new Intent(SubActivity.this, AlarmActivity.class);
+                intent3.putExtra("stridx", stridx);
                 startActivity(intent3);
             }
         });

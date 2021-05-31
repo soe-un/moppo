@@ -7,11 +7,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.SymbolTable;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.example.moppo.MainActivity;
 import com.example.moppo.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 import java.text.SimpleDateFormat;
@@ -22,10 +33,15 @@ import java.util.Date;
 import static android.content.Context.MODE_PRIVATE;
 
 public class AlarmReceiver extends BroadcastReceiver {
+
+    DbHelper helper;
+    SQLiteDatabase db;
+    int idx;
+
+    Context mContext;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-
-
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class);
 
@@ -35,6 +51,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingI = PendingIntent.getActivity(context, 0,
                 notificationIntent, 0);
 
+        idx = intent.getIntExtra("idx", 0);
+        this.mContext = context;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
 
@@ -87,6 +105,116 @@ public class AlarmReceiver extends BroadcastReceiver {
             Date currentDateTime = nextNotifyTime.getTime();
             String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(currentDateTime);
             Toast.makeText(context.getApplicationContext(),"다음 알람은 " + date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
+
+            //cashback event !
+            Calendar c = Calendar.getInstance();
+            Date today = c.getTime();
+            String today_text = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(today);
+
+            c.add(Calendar.DATE, -1);
+            Date yesterday = Calendar.getInstance().getTime();
+            String yesterday_text = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(today);
+
+            helper = new DbHelper(context);
+
+            try{ //get database
+                db = helper.getWritableDatabase();
+            }catch (SQLException ex){
+                db = helper.getReadableDatabase();
+            }
+
+            cashbackEvent(today_text, yesterday_text);
+
+
+        }
+    }
+
+    //cashback
+    public void cashbackEvent(String today, String yesterday){ //사용자가 지정한 하루 시작 1분 전에 실행
+
+        Cursor tc = helper.readLocalDBPlanlist(db, today); //오늘의 목록
+        Cursor yc = helper.readLocalDBPlanlist(db, yesterday); //어제의 목록
+
+        int today_success = 0;
+        int yesterday_success = 0;
+        int tc_sum = 0;
+        int yc_sum = 0;
+        for(int i=1;i<=tc.getCount();i++)
+            tc_sum += i;
+        for(int i=1;i<=yc.getCount();i++)
+            yc_sum += i;
+
+
+        if(tc_sum == 0 || yc_sum == 0) {
+            return;
+        }
+
+
+        while (tc.moveToNext()){ //tc.getCount() 가 전체 order 길이
+            int tmpflag = tc.getInt(tc.getColumnIndex("is_complete"));
+            int tmporder = tc.getInt(tc.getColumnIndex("plan_order"));
+            System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
+
+            if(tmpflag == 1){
+                float tmpcnt = (float)tc.getCount();
+                float tmp = ( (tmpcnt - ((float)tmporder - 1)) / (float)tc_sum ) * 100 ;
+
+                Log.d("MATH", String.valueOf(tmp) );
+                Log.d("MATHround", String.valueOf(Math.round(tmp)) );
+                today_success += (int)(Math.round(tmp));
+                if(today_success == 99){ //100% 계산 ...
+                    today_success ++;
+                }
+            }
+        }
+
+        while (yc.moveToNext()){ //c.getCount() 가 전체 order 길이
+            int tmpflag = yc.getInt(tc.getColumnIndex("is_complete"));
+            int tmporder = yc.getInt(tc.getColumnIndex("plan_order"));
+            System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
+            if(tmpflag == 1){
+                float tmpcnt = (float)yc.getCount();
+                float tmp = ( (tmpcnt - ((float)tmporder - 1)) / (float)yc_sum ) * 100 ;
+
+                Log.d("MATH", String.valueOf(tmp) );
+                Log.d("MATHround", String.valueOf(Math.round(tmp)) );
+                yesterday_success += (int)(Math.round(tmp));
+                if(yesterday_success == 99){ //100% 계산 ...
+                    yesterday_success ++;
+                }
+            }
+        }
+
+        if(today_success > yesterday_success){
+            //후원 금액 * 달성율 ....
+            //캐시백 성공 조건
+            int typeM = today_success - yesterday_success;
+
+            Response.Listener<String> responseListener;
+            responseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        System.out.println(success);
+                        String message = jsonObject.getString("message");
+
+                        if (success) { //캐시백 성공
+                            int cnt = jsonObject.getInt("cnt");
+                            System.out.println("캐시백 성공: "+cnt);
+                        } else { //캐시백 실패
+                            System.out.println("캐시백 실패");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx), typeM); //캐시백 요청. 인자 타입 주의
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+            queue.add(tableUsers);
         }
     }
 }
