@@ -7,12 +7,13 @@
 
     <ImageView
         android:id="@+id/profile_it"
-        android:src="@drawable/user"
         android:layout_width="40dp"
         android:layout_height="50dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="20dp"
-        android:gravity="center" />
+        android:layout_marginLeft="10dp"
+        android:gravity="center"
+        android:src="@drawable/ic_baseline_account_circle_24" />
+
     <TextView
         android:id="@+id/nickname_it"
         android:text=""

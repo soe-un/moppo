@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
@@ -18,6 +19,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.moppo.calendar.FragmentCalendar;
+import com.example.moppo.login.LoginActivity;
 import com.example.moppo.ranking.FragmentRanking;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -39,12 +41,21 @@ public class MainActivity extends AppCompatActivity {
     String userID;
     int idx;
     String userNick;
-    int inMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (SaveSharedPreference.getPrefUserName(MainActivity.this).length() == 0
+                || SaveSharedPreference.getPrefUserId(MainActivity.this).length() == 0
+                || SaveSharedPreference.getPrefUserIdx(MainActivity.this) == -10) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            this.finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        context_main = MainActivity.this;
 
         helper = new DbHelper(this);
 
@@ -54,10 +65,9 @@ public class MainActivity extends AppCompatActivity {
             db = helper.getReadableDatabase();
         }
 
-        userID = getIntent().getStringExtra("userID");
-        idx = getIntent().getIntExtra("idx", 0);
-        userNick = getIntent().getStringExtra("nickname");
-        inMoney = getIntent().getIntExtra("inMoney", 0);
+        userID = SaveSharedPreference.getPrefUserId(context_main);
+        idx = SaveSharedPreference.getPrefUserIdx(context_main);
+        userNick = SaveSharedPreference.getPrefUserName(context_main);
 
         getPlansfromServer(); //Server DB -> Local DB
 
@@ -78,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("userID", userID);
         bundle.putInt("idx", idx);
         bundle.putString("nickname", userNick);
-        bundle.putInt("inMoney", inMoney);
 
         fragmentRanking.setArguments(bundle);
         fragmentCalendar.setArguments(bundle);
@@ -114,9 +123,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.option:
                 Intent intent = new Intent(this, SubActivity.class);
-                intent.putExtra("userID", userID);
-                intent.putExtra("idx",idx);
-                intent.putExtra("nickname", userNick);
                 startActivity(intent);
                 return true;
             default:

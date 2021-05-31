@@ -2,6 +2,8 @@ package com.example.moppo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,27 +23,21 @@ public class SubActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
 
-        Intent intent=getIntent();
-        strID=intent.getStringExtra("userID");
-        stridx = String.valueOf(intent.getIntExtra("idx", 0));
-        strNick=intent.getStringExtra("nickname");
+        strID = SaveSharedPreference.getPrefUserId(SubActivity.this);
+        stridx = String.valueOf(SaveSharedPreference.getPrefUserIdx(SubActivity.this));
+        strNick = SaveSharedPreference.getPrefUserName(SubActivity.this);
 
-        TextView tv_nick=findViewById(R.id.tv_ninkname);
-        TextView rv_email=findViewById(R.id.tv_email);
-        ImageView iv_profile = findViewById(R.id.iv_profile);
+        TextView tv_nick=findViewById(R.id.tv_nickname);
 
         //닉네임 set
         tv_nick.setText(strNick);
-        //이메일 set
-        //rv_email.setText(strEmail);
 
-        //Glide.with(this).load(strProfileImg).into(iv_profile);
         findViewById(R.id.alarm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //알람 화면으로 이동.
                 Intent intent3 = new Intent(SubActivity.this, AlarmActivity.class);
                 startActivity(intent3);
-                //알람 화면으로 이동.
             }
         });
 
@@ -55,9 +51,11 @@ public class SubActivity extends AppCompatActivity {
                     public void onCompleteLogout()
                     {
                         //로그아웃 성공시 수행하는 지점
-                        Intent intent2 = new Intent(SubActivity.this, LoginActivity.class);
-                        startActivity(intent2);
                         //Login 화면으로 이동.
+                        SaveSharedPreference.clearPrefUserData(SubActivity.this);
+                        Intent intent2 = new Intent(SubActivity.this, MainActivity.class);
+                        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent2);
                     }
                 });
             }

@@ -1,11 +1,13 @@
 package com.example.moppo.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -65,6 +67,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                         if (success) {
                             Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                            //로그인으로 돌아가기
+                            RegisterActivity.this.finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "회원가입에 실패하셨습니다. " + message, Toast.LENGTH_SHORT).show();
                             return;

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.moppo.DbHelper;
 import com.example.moppo.MainActivity;
 import com.example.moppo.R;
+import com.example.moppo.SaveSharedPreference;
 import com.example.moppo.TableUsers;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
@@ -54,20 +56,20 @@ public class LoginActivity extends AppCompatActivity {
 
         helper = new DbHelper(this);
 
-        try{ //get database
+        try { //get database
             db = helper.getWritableDatabase();
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             db = helper.getReadableDatabase();
         }
 
-        login_id        = findViewById(R.id.login_id);
-        login_pwd       = findViewById(R.id.login_pwd);
+        login_id = findViewById(R.id.login_id);
+        login_pwd = findViewById(R.id.login_pwd);
 
         login_id.setText("");
         login_pwd.setText("");
 
-        login_btn       = findViewById(R.id.login_btn);
-        register_btn    = findViewById(R.id.register_btn);
+        login_btn = findViewById(R.id.login_btn);
+        register_btn = findViewById(R.id.register_btn);
 
         //Go to RegisterActivity
         register_btn.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +86,11 @@ public class LoginActivity extends AppCompatActivity {
                 String userID = login_id.getText().toString();
                 String userPwd = login_pwd.getText().toString();
 
-                if      (userID.equals("") || userID == null)               { Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }else if(userPwd.equals("") || userPwd == null)             { Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }else {
+                if (userID.equals("") || userID == null) {
+                    Toast.makeText(getApplicationContext(), "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else if (userPwd.equals("") || userPwd == null) {
+                    Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
                     Response.Listener<String> responseListener;
                     responseListener = new Response.Listener<String>() {
                         @Override
@@ -101,14 +105,13 @@ public class LoginActivity extends AppCompatActivity {
 
                                     int userIdx = jsonObject.getInt("useridx");
                                     String userNick = jsonObject.getString("nickname");
-                                    int inmoney = jsonObject.getInt("inmoney");
+
+                                    //로그인 유지
+                                    SaveSharedPreference.setPrefUserData(LoginActivity.this, userNick, userID, userIdx);
 
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    intent.putExtra("userID", userID);
-                                    intent.putExtra("idx", userIdx);
-                                    intent.putExtra("nickname", userNick);
-                                    intent.putExtra("inmoney", inmoney);
                                     startActivity(intent);
+                                    LoginActivity.this.finish();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "로그인 실패, 아이디 및 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
                                     return;
@@ -121,8 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                     TableUsers tableUsers = new TableUsers(responseListener, userID, userPwd);
                     RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
                     queue.add(tableUsers);
-
-
 
 
                 }
@@ -202,4 +203,3 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
-
