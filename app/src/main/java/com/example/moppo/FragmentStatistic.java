@@ -1,6 +1,8 @@
 package com.example.moppo;
 
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -26,6 +31,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import java.util.ArrayList;
 import java.util.Calendar;
 import com.example.moppo.MainActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FragmentStatistic extends Fragment{
 
@@ -41,6 +50,9 @@ public class FragmentStatistic extends Fragment{
     int idx;
     String userNick;
     int inMoney;
+
+    DbHelper helper;
+    SQLiteDatabase db;
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date, GetTodayStatistic in){
@@ -120,6 +132,14 @@ public class FragmentStatistic extends Fragment{
         userNick = bundle.getString("nickname");
         inMoney = bundle.getInt("inMoney");
 
+        helper = new DbHelper(getContext());
+
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
+
         return inflater.inflate(R.layout.fragment_statistic,container, false);
     }
 
@@ -141,7 +161,50 @@ public class FragmentStatistic extends Fragment{
         Get5days(month,date, in);
         setGraph(values);
 
+        getPlansfromServer();
 
+    }
+
+    private void getPlansfromServer() { //원하는 idx의 DB 읽어오기
+
+        Response.Listener<String> responseListener;
+        responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    helper.cleanLocalDB(db);
+
+                    for(int i = 0 ; i<jsonArray.length() ; i++){
+                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
+
+                        int server_idx = tmpjsonobj.getInt("server_idx");
+                        String plan_name = tmpjsonobj.getString("plan_name");
+                        int plan_order = tmpjsonobj.getInt("plan_order");
+                        int income = tmpjsonobj.getInt("income");
+                        int is_complete = tmpjsonobj.getInt("is_complete");
+                        String timestamp = tmpjsonobj.getString("timestamp");
+
+                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
+                        helper.putLocalDB(db, tablePlans, 0);
+
+                    }
+
+                    values.clear();
+
+                    GetTodayStatistic in=new GetTodayStatistic(getActivity(), idx);
+                    Get5days(month,date, in);
+                    setGraph(values);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx));
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(tableUsers);
 
     }
 

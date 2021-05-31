@@ -8,10 +8,15 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.moppo.DbHelper;
 
@@ -24,6 +29,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
 
 public class GetTodayStatistic {
     //오늘 날짜 가져오기
@@ -130,13 +136,19 @@ public class GetTodayStatistic {
 
         String q = String.format("SELECT * from plans WHERE date(timestamp) = date('%s') AND is_updated != 2;", selectedDate);
         Cursor c = db.rawQuery(q, null);
-        int sum = 0; //우선순위 총합
-        for(int i=1; i <= c.getCount(); i++)
-            sum += sum;
 
+        int sum = 0; //우선순위 총합
+
+        Log.d("readc", String.valueOf(c.getCount()));
+
+        for(int i=1; i <= c.getCount(); i++) {
+            sum += i;
+        }
+
+        Log.d("reads", String.valueOf(sum));
         //플랜이 저장 안 되어 있으면
         if(sum == 0) {
-            Toast.makeText(context, "저장된 플랜이 없습니다.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "저장된 플랜이 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -146,58 +158,31 @@ public class GetTodayStatistic {
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
             //result += (tmpflag)*(5-tmporder);
             if(tmpflag == 1){
-                result += Math.round(((c.getCount() - (tmporder - 1)) / sum) * 100) / 100.0;
+                float tmpcnt = (float)c.getCount();
+                float tmp = ( (tmpcnt - ((float)tmporder - 1)) / (float)sum ) * 100 ;
+
+
+                Log.d("MATH", String.valueOf(tmp) );
+                Log.d("MATHround", String.valueOf(Math.round(tmp)) );
+                result += (int)(Math.round(tmp));
+                if(result == 99){ //100% 계산 ...
+                    result ++;
+                }
             }
         }
         c.close();
 
     }
 
-    private void getPlansfromServer() { //원하는 idx의 DB 읽어오기
-
-        Response.Listener<String> responseListener;
-        responseListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    helper.cleanLocalDB(db);
-
-                    for(int i = 0 ; i<jsonArray.length() ; i++){
-                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
-
-                        int server_idx = tmpjsonobj.getInt("server_idx");
-                        String plan_name = tmpjsonobj.getString("plan_name");
-                        int plan_order = tmpjsonobj.getInt("plan_order");
-                        int income = tmpjsonobj.getInt("income");
-                        int is_complete = tmpjsonobj.getInt("is_complete");
-                        String timestamp = tmpjsonobj.getString("timestamp");
-
-                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, tablePlans, 0);
 
 
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        };
-        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx));
-        RequestQueue queue = Volley.newRequestQueue(context);
-        queue.add(tableUsers);
-
-    }
 
     public int getAchievement(int m,int d) {//읽어온 파일의 달성률 반환 함수
-        //readToday(m, d);
         String selDate = String.format("2021-%02d-%02d", m , d);
-        getPlansfromServer();
         readToday(selDate);
         System.out.println(result);
 
-        return result * 100;
+        return result;
     }
 
     //cashback
@@ -220,13 +205,22 @@ public class GetTodayStatistic {
             return;
         }
 
+
         while (tc.moveToNext()){ //tc.getCount() 가 전체 order 길이
             int tmpflag = tc.getInt(tc.getColumnIndex("is_complete"));
             int tmporder = tc.getInt(tc.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
-            //today_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
+
             if(tmpflag == 1){
-                today_success += Math.round(((tc.getCount()-(tmporder-1))/tc_sum)*100)/100.0;
+                float tmpcnt = (float)tc.getCount();
+                float tmp = ( (tmpcnt - ((float)tmporder - 1)) / (float)tc_sum ) * 100 ;
+
+                Log.d("MATH", String.valueOf(tmp) );
+                Log.d("MATHround", String.valueOf(Math.round(tmp)) );
+                today_success += (int)(Math.round(tmp));
+                if(today_success == 99){ //100% 계산 ...
+                    today_success ++;
+                }
             }
         }
 
@@ -234,9 +228,16 @@ public class GetTodayStatistic {
             int tmpflag = yc.getInt(tc.getColumnIndex("is_complete"));
             int tmporder = yc.getInt(tc.getColumnIndex("plan_order"));
             System.out.println("tmpflag: "+tmpflag+" tmporder: "+tmporder);
-            //yesterday_success += (tmpflag)*(5-tmporder); //우선순위 계산식 바꿔주세욤
             if(tmpflag == 1){
-                yesterday_success += Math.round(((yc.getCount()-(tmporder-1))/yc_sum)*100)/100.0;
+                float tmpcnt = (float)yc.getCount();
+                float tmp = ( (tmpcnt - ((float)tmporder - 1)) / (float)yc_sum ) * 100 ;
+
+                Log.d("MATH", String.valueOf(tmp) );
+                Log.d("MATHround", String.valueOf(Math.round(tmp)) );
+                yesterday_success += (int)(Math.round(tmp));
+                if(yesterday_success == 99){ //100% 계산 ...
+                    yesterday_success ++;
+                }
             }
         }
 

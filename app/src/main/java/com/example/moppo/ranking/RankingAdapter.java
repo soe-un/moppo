@@ -100,7 +100,9 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
                 intent.putExtra("idx", useridx); //상대방 idx
                 intent.putExtra("userID", userID); //상대방 ID
                 intent.putExtra("nickname", nickname); //상대방 nickname
-                intent.putExtra("inMoney", inMoney); //상대방이 후원을 통해 받은 도ㅗㄴ
+                intent.putExtra("inMoney", inMoney); //상대방이 후원을 통해 받은 돈
+
+
 
                 mContext.startActivity(intent);
             }
