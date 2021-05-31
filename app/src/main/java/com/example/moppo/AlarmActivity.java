@@ -27,12 +27,16 @@ import android.os.Bundle;
 
 public class AlarmActivity extends AppCompatActivity {
 
+    String stridx;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
         final TimePicker picker=(TimePicker)findViewById(R.id.timePicker);
         picker.setIs24HourView(true);
+
+        stridx = getIntent().getStringExtra("stridx");
 
 
         // 앞서 설정한 값으로 보여주기
@@ -131,6 +135,7 @@ public class AlarmActivity extends AppCompatActivity {
         PackageManager pm = this.getPackageManager();
         ComponentName receiver = new ComponentName(this, DeviceBootReceiver.class);
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        alarmIntent.putExtra("idx", Integer.parseInt(stridx));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
