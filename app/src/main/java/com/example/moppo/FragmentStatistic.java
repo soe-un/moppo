@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import com.example.moppo.MainActivity;
@@ -41,7 +42,9 @@ public class FragmentStatistic extends Fragment{
     Calendar cal = Calendar.getInstance();
     int month = cal.get(cal.MONTH) + 1;
     int date = cal.get(cal.DATE);
-    int []daylist;
+    int []dayList = new int[5];
+    int []monthList = new int[5];
+    int []dateList = new int[5];
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
     LineChart chart;
 
@@ -56,12 +59,29 @@ public class FragmentStatistic extends Fragment{
 
     // 날짜 변수들 ex) 달이 바뀌는 거, 28일 등등 -> 더 생각해보기
     public void Get5days(int month,int date, GetTodayStatistic in){
-        daylist = new int[5];
+        SimpleDateFormat monthF = new SimpleDateFormat("MM");
+        SimpleDateFormat dateF = new SimpleDateFormat("dd");
+        Calendar calendar = Calendar.getInstance();
+
+        monthList[0] = Integer.parseInt(monthF.format(calendar.getTime()));
+        dateList[0] = Integer.parseInt(dateF.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, -1);
+        monthList[1] = Integer.parseInt(monthF.format(calendar.getTime()));
+        dateList[1] = Integer.parseInt(dateF.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, -1);
+        monthList[2] = Integer.parseInt(monthF.format(calendar.getTime()));
+        dateList[2] = Integer.parseInt(dateF.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, -1);
+        monthList[3] = Integer.parseInt(monthF.format(calendar.getTime()));
+        dateList[3] = Integer.parseInt(dateF.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, -1);
+        monthList[4] = Integer.parseInt(monthF.format(calendar.getTime()));
+        dateList[4] = Integer.parseInt(dateF.format(calendar.getTime()));
+        calendar.add(Calendar.DATE, -1);
+
         for(int i = 0 ; i < 5 ; i ++) {
-            daylist[i]=in.getAchievement(month,date-4+i);
-        }
-        for(int i = 0 ; i < 5 ; i ++) {
-            float val=daylist[i];
+            dayList[i]=in.getAchievement(monthList[4-i],dateList[4-i]);
+            float val=dayList[i];
             values.add(new Entry(i+1,val));
         }
 
