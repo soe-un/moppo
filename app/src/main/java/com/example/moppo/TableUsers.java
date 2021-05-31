@@ -17,6 +17,7 @@ public class TableUsers extends StringRequest {
     final static private String plURL = si.getPlanlistingURL();
     final static private String puURL = si.getPlanupdatingURL();
     final static private String diURL = si.getDoitURL();
+    final static private String cbURL = si.getCashbackURL();
     private Map<String, String> map;
     private Map<String, JSONArray> servermap;
 
@@ -48,6 +49,14 @@ public class TableUsers extends StringRequest {
         map.put("userPwd", userPwd);
     }
 
+    public TableUsers(Response.Listener<String> listener, String userNo, int typeMoney){ //To CashBack
+        super(Method.POST, cbURL, listener, null);
+
+        map = new HashMap<>();
+        map.put("userNo", userNo);
+        map.put("typeRate", String.valueOf(typeMoney));
+    }
+
     public TableUsers(Response.Listener<String> listener, String userNo, String typeMoney, String typeNo){ //To Money table
         super(Method.POST, diURL, listener, null);
 
@@ -56,6 +65,7 @@ public class TableUsers extends StringRequest {
         map.put("typeMoney", typeMoney);
         map.put("typeNo", typeNo);
     }
+
 
     public TableUsers(Response.Listener<String> listener, String ... params){ //To Register
         super(Method.POST, reURL, listener, null);

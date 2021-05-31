@@ -187,6 +187,7 @@ public class GetTodayStatistic {
 
     //cashback
     public void cashbackEvent(String today, String yesterday){ //사용자가 지정한 하루 시작 1분 전에 실행
+        //함수 옮겨야 할 듯
 
         Cursor tc = helper.readLocalDBPlanlist(db, today); //오늘의 목록
         Cursor yc = helper.readLocalDBPlanlist(db, yesterday); //어제의 목록
@@ -243,7 +244,33 @@ public class GetTodayStatistic {
 
         if(today_success > yesterday_success){
             //후원 금액 * 달성율 ....
-            //여기서 money 테이블로 돈을 쏴줍니다. 이게 성공되면 알람이 오면 될 것 같아요
+            //캐시백 성공 조건
+            int typeM = today_success - yesterday_success;
+
+            Response.Listener<String> responseListener;
+            responseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        boolean success = jsonObject.getBoolean("success");
+                        System.out.println(success);
+                        String message = jsonObject.getString("message");
+
+                        if (success) { //캐시백 성공
+
+                        } else { //캐시백 실패
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(idx), typeM); //캐시백 요청. 인자 타입 주의
+            RequestQueue queue = Volley.newRequestQueue(context);
+            queue.add(tableUsers);
         }else{
             return;
         }

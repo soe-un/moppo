@@ -5,7 +5,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.example.moppo.calendar.DailyPlan;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "moppo.db";
@@ -65,6 +75,21 @@ public class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(q, null);
 
         return cursor;
+    }
+
+    public HashSet<CalendarDay> readisPlan(SQLiteDatabase db){
+        HashSet<CalendarDay> hashSet = new HashSet<CalendarDay>();
+        String q = String.format("SELECT * from plans WHERE is_updated != 2;");
+        Cursor cursor = db.rawQuery(q, null);
+
+        CalendarDay result = null;
+
+        while(cursor.moveToNext()){
+            String[] tmp = cursor.getString(cursor.getColumnIndex("timestamp")).split("-");
+            result = new CalendarDay(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]) -1, Integer.parseInt(tmp[2]));
+            hashSet.add(result);
+        }
+        return hashSet;
     }
 
     public void cleanLocalDB(SQLiteDatabase db){

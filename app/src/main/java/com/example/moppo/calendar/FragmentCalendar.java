@@ -1,6 +1,9 @@
 package com.example.moppo.calendar;
 
 import android.content.Intent;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.moppo.DbHelper;
 import com.example.moppo.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
@@ -17,12 +21,18 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.util.Calendar;
+import java.util.Collection;
 
 public class FragmentCalendar extends Fragment implements OnDateSelectedListener{
     MaterialCalendarView cal;
     final TodayDecorator todayDecorator = new TodayDecorator();
     String userID;
     int idx;
+
+    DbHelper helper;
+    SQLiteDatabase db;
+
+    Collection<CalendarDay> dates;
 
 
     @Nullable
@@ -33,6 +43,14 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         Bundle bundle = getArguments();
         userID = bundle.getString("userID");
         idx = bundle.getInt("idx");
+
+        helper = new DbHelper(getContext());
+
+        try{ //get database
+            db = helper.getWritableDatabase();
+        }catch (SQLException ex){
+            db = helper.getReadableDatabase();
+        }
 
         return inflater.inflate(R.layout.fragment_calendar,container, false);
     }
@@ -52,6 +70,10 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         cal.addDecorators(new SundayDecorator(),
                 new SaturdayDecorator(),
                 todayDecorator);
+
+        dates = helper.readisPlan(db);
+        cal.addDecorator(new EventDecorator(Color.rgb(124, 164, 215), dates));
+
 
         cal.setSelectedDate(CalendarDay.today());
         cal.setOnDateChangedListener((OnDateSelectedListener) this);
