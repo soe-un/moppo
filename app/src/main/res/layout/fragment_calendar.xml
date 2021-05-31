@@ -13,4 +13,10 @@
         app:mcv_selectionColor="@color/main_color"
         app:mcv_showOtherDates="all" />
 
+    <ImageView
+        android:layout_width="570dp"
+        android:layout_height="240dp"
+        android:src="@drawable/img_c"
+
+        />
 </LinearLayout>

@@ -82,8 +82,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setWhen(System.currentTimeMillis())
                 //text 설정하기
                 .setTicker("{Time to watch some cool stuff!}")
-                .setContentTitle("상태바 드래그시 보이는 타이틀")
-                .setContentText("상태바 드래그시 보이는 서브타이틀")
+                .setContentTitle("오늘, 당신의 하루는 얼마인가요?")
+                .setContentText("오늘의 계획으로 당신의 값어치를 올려봐요!")
                 .setContentInfo("INFO")
                 .setContentIntent(pendingI);
 

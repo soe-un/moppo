@@ -92,7 +92,7 @@ public class FragmentStatistic extends Fragment{
     public void setGraph(ArrayList<Entry> values){
 
         LineDataSet lineDataSet;
-        lineDataSet=new LineDataSet(values,"최근 5일 달성률");
+        lineDataSet=new LineDataSet(values," ");
         //UI 개선
         lineDataSet.setLineWidth(2);
         lineDataSet.setCircleRadius(6);

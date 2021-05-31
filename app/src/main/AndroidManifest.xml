@@ -13,11 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moppo"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AlarmActivity"></activity>
         <activity android:name=".SupportActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".AlarmActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,6 +43,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".AlarmReceiver"/>
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
