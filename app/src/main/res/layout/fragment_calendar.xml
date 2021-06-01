@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#dbedfa"
     android:orientation="vertical">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="366dp"
+        android:background="@drawable/img_cal_b"
         app:mcv_selectionColor="@color/main_color"
-        app:mcv_showOtherDates="all" />
+        app:mcv_showOtherDates="all">
 
-    <ImageView
-        android:layout_width="570dp"
-        android:layout_height="240dp"
-        android:src="@drawable/img_c"
+    </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
 
-        />
 </LinearLayout>
