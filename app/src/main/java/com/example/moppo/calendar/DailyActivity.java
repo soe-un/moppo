@@ -67,7 +67,6 @@ public class DailyActivity extends AppCompatActivity {
 
         //리사이클러뷰
         mRecyclerView = (RecyclerView) findViewById(R.id.PlanList);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, 1));
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
