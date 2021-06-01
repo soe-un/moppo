@@ -47,13 +47,22 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void putLocalDB(SQLiteDatabase db, TablePlans pt, int isLocal){
+    public int putLocalDB(SQLiteDatabase db, TablePlans pt, int isLocal){
 
         String q = String.format("INSERT INTO plans (idx, server_idx, plan_name, plan_order, income, is_complete, timestamp, is_updated)"+
                 "VALUES (null, %d, '%s', %d, %d, %d, date('%s'), %d);", pt.getServer_idx(), pt.getPlan_name(),
                 pt.getPlan_order(), pt.getIncome(), pt.getIs_complete()==1?1:0, pt.getTimestamp(), isLocal);
 
         db.execSQL(q);
+
+        String qq = String.format("SELECT * FROM plans ORDER BY idx DESC limit 1"); //최근에 추가한 항목을 가져오기
+        Cursor c = db.rawQuery(qq, null);
+
+        int localidx = 0;
+        while(c.moveToNext()) {
+            localidx = c.getInt(c.getColumnIndex("idx"));
+        }
+        return localidx;
     }
 
     public void updateLocalDB(SQLiteDatabase db, DailyPlan dp){

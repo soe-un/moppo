@@ -275,7 +275,8 @@ public class DailyActivity extends AppCompatActivity {
             //없는 요소일 경우 local db에 put
             if(item.getLocalIdx() == -1) {
                 TablePlans pt = new TablePlans(-1, item.getPlan(), item.getOrder(), item.getIncome(), item.getSelected(), selectedDate);
-                helper.putLocalDB(db, pt, 1);
+                int local = helper.putLocalDB(db, pt, 1);
+                item.setLocalIdx(local);
             }else{ //있는 요소일 경우 update
                 helper.updateLocalDB(db, item); //local db에 업데이트
             }
