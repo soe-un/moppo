@@ -18,6 +18,7 @@ public class TableUsers extends StringRequest {
     final static private String puURL = si.getPlanupdatingURL();
     final static private String diURL = si.getDoitURL();
     final static private String cbURL = si.getCashbackURL();
+    final static private String gMURL = si.getGetTotalURL();
     private Map<String, String> map;
     private Map<String, JSONArray> servermap;
 
@@ -39,6 +40,13 @@ public class TableUsers extends StringRequest {
 
         map = new HashMap<>();
         map.put("userNo", userNo);
+    }
+
+    public TableUsers(Response.Listener<String> listener, int idx){
+        super(Method.POST, gMURL, listener, null);
+
+        map = new HashMap<>();
+        map.put("userIdx", String.valueOf(idx));
     }
 
     public TableUsers(Response.Listener<String> listener, String userID, String userPwd){ //To Login

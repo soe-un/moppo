@@ -112,8 +112,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             String today_text = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(today);
 
             c.add(Calendar.DATE, -1);
-            Date yesterday = Calendar.getInstance().getTime();
-            String yesterday_text = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(today);
+            Date yesterday = c.getTime();
+            String yesterday_text = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(yesterday);
 
             helper = new DbHelper(context);
 
@@ -204,7 +204,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             int cnt = jsonObject.getInt("cnt");
                             System.out.println("캐시백 성공: "+cnt);
                         } else { //캐시백 실패
-                            System.out.println("캐시백 실패");
+                            System.out.println("캐시백 실패: "+message);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

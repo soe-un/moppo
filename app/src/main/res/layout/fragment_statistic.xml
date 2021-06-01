@@ -30,14 +30,29 @@
         android:id="@+id/by_support_money"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="monospace"
         android:gravity="center"
         android:hint="후원 금액"
         android:textSize="8pt"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.265"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statistic_text" />
+
+    <TextView
+        android:id="@+id/by_total_money"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:hint="전체 금액"
+        android:textSize="8pt"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.737"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/statistic_text" />
 

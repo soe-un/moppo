@@ -114,39 +114,4 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.CustomVi
         return users.size();
     }
 
-    private void getPlansfromServer(int index) { //원하는 idx의 DB 읽어오기
-
-        Response.Listener<String> responseListener;
-        responseListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    helper.cleanLocalDB(db);
-
-                    for(int i = 0 ; i<jsonArray.length() ; i++){
-                        JSONObject tmpjsonobj = (JSONObject) jsonArray.get(i);
-
-                        int server_idx = tmpjsonobj.getInt("server_idx");
-                        String plan_name = tmpjsonobj.getString("plan_name");
-                        int plan_order = tmpjsonobj.getInt("plan_order");
-                        int income = tmpjsonobj.getInt("income");
-                        int is_complete = tmpjsonobj.getInt("is_complete");
-                        String timestamp = tmpjsonobj.getString("timestamp");
-
-                        TablePlans tablePlans = new TablePlans(server_idx, plan_name, plan_order, income, is_complete, timestamp);
-                        helper.putLocalDB(db, tablePlans, 0);
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        };
-        TableUsers tableUsers = new TableUsers(responseListener, String.valueOf(index));
-        RequestQueue queue = Volley.newRequestQueue(mContext);
-        queue.add(tableUsers);
-
-    }
 }

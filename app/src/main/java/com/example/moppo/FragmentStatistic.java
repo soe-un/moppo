@@ -1,14 +1,17 @@
 package com.example.moppo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.moppo.login.LoginActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -48,11 +52,12 @@ public class FragmentStatistic extends Fragment{
     ArrayList<Entry> values=new ArrayList<>();//Entry 란?
     LineChart chart;
 
-    TextView user, money;
+    TextView user, money, totalMoney;
     String userID;
     int idx;
     String userNick;
     int inMoney;
+    int intotalMoney;
 
     DbHelper helper;
     SQLiteDatabase db;
@@ -150,7 +155,6 @@ public class FragmentStatistic extends Fragment{
         userID = bundle.getString("userID");
         idx = bundle.getInt("idx");
         userNick = bundle.getString("nickname");
-        inMoney = bundle.getInt("inMoney");
 
         helper = new DbHelper(getContext());
 
@@ -173,6 +177,9 @@ public class FragmentStatistic extends Fragment{
         money = view.findViewById(R.id.by_support_money);
         money.setText(String.valueOf(inMoney)+"원을 후원받았어요!");
 
+        totalMoney = view.findViewById(R.id.by_total_money);
+        totalMoney.setText("총 자산: "+String.valueOf(intotalMoney));
+
         chart= view.findViewById(R.id.linechart);
 
         values.clear();
@@ -181,7 +188,8 @@ public class FragmentStatistic extends Fragment{
         Get5days(month,date, in);
         setGraph(values);
 
-        getPlansfromServer();
+        getMoneyfromServer(); //서버로부터 전체 돈 받아오기
+        getPlansfromServer(); //서버로부터 달성율 계산을 위한 plan 받아오기
 
     }
 
@@ -226,6 +234,47 @@ public class FragmentStatistic extends Fragment{
         RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(tableUsers);
 
+    }
+
+    private void getMoneyfromServer() {
+        Response.Listener<String> responseListener;
+        responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+
+                    JSONObject jsonObject = new JSONObject(response);
+                    boolean success = jsonObject.getBoolean("success");
+
+                    if (success) {
+
+                        int jsonintotalmoney = jsonObject.getInt("totalMoney");
+                        int jsoninmoney = jsonObject.getInt("inmoney");
+
+                        intotalMoney = jsonintotalmoney;
+                        inMoney = jsoninmoney;
+
+                        Log.d("stat", String.valueOf(intotalMoney));
+                        Log.d("statmo", String.valueOf(inMoney));
+
+                        money.setText(String.valueOf(inMoney)+"원을 후원받았어요!");
+                        totalMoney.setText("총 자산: "+String.valueOf(intotalMoney));
+
+                        Toast.makeText(getActivity(), "갱신되었습니다.", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(getActivity(), "갱신 실패, 새로고침 해주세요.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        TableUsers tableUsers = new TableUsers(responseListener, idx);
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(tableUsers);
     }
 
 }
