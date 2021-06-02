@@ -6,8 +6,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.fonts.FontFamily;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.moppo.DbHelper;
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
-//@RequiresApi(api = Build.VERSION_CODES.O)
 public class FragmentCalendar extends Fragment implements OnDateSelectedListener {
     MaterialCalendarView cal;
     final TodayDecorator todayDecorator = new TodayDecorator();
@@ -121,6 +117,10 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                all.setTextColor(Color.BLACK);
+                complete.setTextColor(-1979711488);
+                incomplete.setTextColor(-1979711488);
+
                 list.clear();
                 Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
                 while (cursor.moveToNext()) {
@@ -135,9 +135,12 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         complete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                complete.setTextColor(Color.BLACK);
+                all.setTextColor(-1979711488);
+                incomplete.setTextColor(-1979711488);
+
                 list.clear();
                 Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
-
                 while (cursor.moveToNext()) {
                     String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
                     int isSelected = cursor.getInt(cursor.getColumnIndex("is_complete"));
@@ -152,9 +155,14 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         incomplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println(complete.getCurrentTextColor());
+
+                incomplete.setTextColor(Color.BLACK);
+                all.setTextColor(-1979711488);
+                complete.setTextColor(-1979711488);
+
                 list.clear();
                 Cursor cursor = helper.readLocalDBPlanlist(db, selectedDate);
-
                 while (cursor.moveToNext()) {
                     String plan = cursor.getString(cursor.getColumnIndex("plan_name"));
                     int isSelected = cursor.getInt(cursor.getColumnIndex("is_complete"));

@@ -31,7 +31,7 @@
             android:layout_marginRight="20dp"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/elicedigitalbaeumregular"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="자세히"
             android:textSize="20sp" />
 
@@ -44,7 +44,6 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/elicedigitalbaeumregular"
             android:text="전체"
             android:textSize="20sp" />
 
@@ -58,7 +57,6 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/elicedigitalbaeumregular"
             android:text="달성"
             android:textSize="20sp" />
 
@@ -72,7 +70,6 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/elicedigitalbaeumregular"
             android:text="미달성"
             android:textSize="20sp" />
 

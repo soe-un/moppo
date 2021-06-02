@@ -5,13 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F7FF"
     tools:context=".FragmentStatistic">
 
     <TextView
         android:id="@+id/statistic_text"
-        android:layout_width="152dp"
-        android:layout_height="39dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/elicedigitalbaeumbold"
         android:gravity="center"
@@ -27,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginTop="20dp"
-        android:fontFamily="@font/elicedigitalbaeumregular"
         android:gravity="center"
         android:hint="후원 금액"
         android:textSize="8pt"
@@ -42,7 +40,6 @@
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginTop="60dp"
-        android:fontFamily="@font/elicedigitalbaeumregular"
         android:gravity="center"
         android:hint="전체 금액"
         android:textSize="8pt"
