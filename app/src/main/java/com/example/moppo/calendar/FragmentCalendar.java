@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.moppo.DbHelper;
 import com.example.moppo.R;
@@ -49,6 +50,8 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
 
     Collection<CalendarDay> dates;
 
+    SwipeRefreshLayout refreshLayout;
+
 
     @Nullable
     @Override
@@ -80,6 +83,7 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         complete = view.findViewById(R.id.complete);
         incomplete = view.findViewById(R.id.not_yet);
         more = view.findViewById(R.id.more);
+        refreshLayout = view.findViewById(R.id.refresh);
 
         cal.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -102,6 +106,15 @@ public class FragmentCalendar extends Fragment implements OnDateSelectedListener
         //헤더랑 요일 크기 키워주기
         cal.setHeaderTextAppearance(R.style.HEADER);
         cal.setWeekDayTextAppearance(R.style.WEEK);
+
+        //새로고침
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                read();
+                refreshLayout.setRefreshing(false);
+            }
+        });
 
         //리스트뷰 부분
         if (selectedDate == null) {

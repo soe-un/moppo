@@ -29,9 +29,9 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="자세히"
             android:textSize="20sp" />
 
@@ -73,11 +73,18 @@
             android:text="미달성"
             android:textSize="20sp" />
 
-        <ListView
-            android:id="@+id/onlyPlan"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/more" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/more">
+
+            <ListView
+                android:id="@+id/onlyPlan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     </RelativeLayout>
 
 </LinearLayout>
