@@ -260,7 +260,6 @@ public class FragmentStatistic extends Fragment{
                         money.setText(String.valueOf(inMoney)+"원을 후원받았어요!");
                         totalMoney.setText("총 자산: "+String.valueOf(intotalMoney));
 
-                        Toast.makeText(getActivity(), "갱신되었습니다.", Toast.LENGTH_SHORT).show();
 
                     } else {
                         Toast.makeText(getActivity(), "갱신 실패, 새로고침 해주세요.", Toast.LENGTH_SHORT).show();

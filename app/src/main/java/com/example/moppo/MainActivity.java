@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         getPlansfromServer(); //Server DB -> Local DB
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.frameLayout,fragmentCalendar).commitAllowingStateLoss();
+        transaction.replace(R.id.fragment_container,fragmentCalendar).commitAllowingStateLoss();
 
         mBottomNV = findViewById(R.id.bottomNavBar);
         mBottomNV.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -99,13 +99,13 @@ public class MainActivity extends AppCompatActivity {
 
         switch(id){
             case R.id.calendar:
-                transaction.replace(R.id.frameLayout, fragmentCalendar).commitAllowingStateLoss();
+                transaction.replace(R.id.fragment_container, fragmentCalendar).commitAllowingStateLoss();
                 break;
             case R.id.statistic:
-                transaction.replace(R.id.frameLayout, fragmentStatistic).commit();
+                transaction.replace(R.id.fragment_container, fragmentStatistic).commit();
                 break;
             case R.id.ranking:
-                transaction.replace(R.id.frameLayout, fragmentRanking).commitAllowingStateLoss();
+                transaction.replace(R.id.fragment_container, fragmentRanking).commitAllowingStateLoss();
                 break;
             default:
                 break;
