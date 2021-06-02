@@ -11,7 +11,7 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="366dp"
-        android:background="@drawable/img_cal_b"
+        android:background="@drawable/white2"
         app:mcv_selectionColor="@color/main_color"
         app:mcv_showOtherDates="all">
 
