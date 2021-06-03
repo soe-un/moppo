@@ -75,6 +75,7 @@
             android:layout_marginLeft="55dp"
             android:layout_marginTop="413dp"
             android:text="4일 전        3일 전        2일 전             어제             오늘"
+            android:textSize="6pt"
             app:layout_constraintHorizontal_bias="0.916" />
 
     </androidx.cardview.widget.CardView>
